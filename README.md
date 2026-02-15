@@ -64,7 +64,7 @@ Global AGENTS.md teaches **how to work**. Project-level AGENTS.md adds **what to
 ## Install
 
 ```bash
-git clone https://github.com/YOUR_USER/agents.md.git
+git clone https://github.com/pvliesdonk/agents.md.git
 cd agents.md
 chmod +x install.sh
 ./install.sh
