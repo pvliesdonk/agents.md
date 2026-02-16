@@ -108,12 +108,21 @@ This memory will be discovered by future `/deliberate-start` commands when searc
 
 **If mem0 is not configured**, skip this step and note: "Memory storage skipped (mem0 not configured)."
 
-### 5. Present the Synthesis
+### 5. Propose an ADR
+
+If the deliberation reached a clear architectural decision, propose creating an ADR:
+
+"This decision could be captured as an ADR. Shall I create `docs/decisions/NNNN-{topic}.md`?"
+
+If the user agrees, use the `/adr-create` command or scaffold the ADR manually following the MADR template from the `documentation-patterns` skill. Link the GitHub Discussion in the ADR's Links section.
+
+### 6. Present the Synthesis
 
 Display the synthesis to the user and confirm:
 - Posted to Discussion #$1
-- Stored in memory
+- Stored in memory (if mem0 configured)
 - Discussion URL for reference
+- Whether an ADR should be created
 
 ## Example Output
 

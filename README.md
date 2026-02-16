@@ -16,7 +16,7 @@ The foundation that applies to every session:
 - **Skill directory** — tells agents which skills to load and when
 - **Delegation table** — routes tasks to the right subagent
 
-### 9 Subagents
+### 12 Subagents
 
 | Agent | Role | Access |
 |-------|------|--------|
@@ -26,13 +26,16 @@ The foundation that applies to every session:
 | `@security-reviewer` | Security audits, CVEs, secrets, LLM-specific risks | Read-only (audit) |
 | `@github-ops` | Issues, PRs, stacked PRs, releases, CI/CD | Full write + gh CLI |
 | `@frontend-dev` | CLI (typer/rich), web UI, terminal UX | Full write |
+| `@technical-writer` | ADRs, API docs, technical writing, changelogs | Read + ask-to-write |
+| `@test-engineer` | Test strategy, pytest, coverage, TDD, LLM testing | Read + ask-to-write |
+| `@devops-engineer` | Docker, k8s, IaC, secrets, deployment | Full write |
 | `@claude-deliberator` | Multi-agent architectural deliberation (Claude Opus 4.6) | Read-only + GitHub Discussion comments |
 | `@gemini-deliberator` | Multi-agent architectural deliberation (Gemini 3 Pro) | Read-only + GitHub Discussion comments |
 | `@gpt-deliberator` | Multi-agent architectural deliberation (GPT-5.2) | Read-only + GitHub Discussion comments |
 
 Each agent has scoped permissions (edit/bash allow/ask/deny) and references its related skills.
 
-### 8 On-Demand Skills
+### 14 On-Demand Skills
 
 Skills are loaded only when needed, saving context tokens:
 
@@ -47,21 +50,30 @@ Skills are loaded only when needed, saving context tokens:
 | `cli-patterns` | typer + rich: commands, progress, tables, error UX, verbosity |
 | `deliberation` | Multi-agent debate protocol, comment structure, convergence rules |
 | `memory-patterns` | mem0 integration, scoping strategy, hook-based capture |
+| `documentation-patterns` | ADR templates (MADR), API doc standards, technical writing, changelogs |
+| `testing-patterns` | pytest, fixtures, mocking, property-based testing, async, coverage, LLM testing |
+| `observability-patterns` | structlog, PII redaction, token tracking, OpenTelemetry, Prometheus, LLM monitoring |
+| `data-patterns` | RAG chunking, vector stores, embeddings, data validation, schema evolution |
+| `infrastructure-patterns` | Docker, k8s, secrets management, IaC, CI/CD pipelines, health checks |
 
 ## How It Fits Together
 
 ```
 AGENTS.md (always loaded)
   ├── defines Python standards, doc-first mandate, core principles
+  ├── documentation standards → ADR workflow, API docs, technical writing
   ├── skill directory → tells agents WHEN to load each skill
   └── delegation table → tells agents WHICH subagent handles what
         │
-        ├── @architect ──────── loads: python-patterns
-        ├── @llm-engineer ───── loads: langchain-patterns, dual-model-strategy
-        ├── @prompt-engineer ── loads: prompt-craft, dual-model-strategy
-        ├── @security-reviewer  (no skills — uses own checklist)
-        ├── @github-ops ─────── loads: github-workflow, release-flow
-        └── @frontend-dev ───── loads: cli-patterns
+        ├── @architect ─────────── loads: python-patterns, documentation-patterns
+        ├── @llm-engineer ──────── loads: langchain-patterns, dual-model-strategy
+        ├── @prompt-engineer ───── loads: prompt-craft, dual-model-strategy
+        ├── @security-reviewer      (no skills — uses own checklist)
+        ├── @github-ops ────────── loads: github-workflow, release-flow
+        ├── @frontend-dev ──────── loads: cli-patterns
+        ├── @technical-writer ──── loads: documentation-patterns
+        ├── @test-engineer ─────── loads: testing-patterns
+        └── @devops-engineer ───── loads: infrastructure-patterns
 ```
 
 Global AGENTS.md teaches **how to work**. Project-level AGENTS.md adds **what to work on**.
@@ -85,6 +97,7 @@ Copy files to the opencode config directory:
 cp AGENTS.md ~/.config/opencode/AGENTS.md
 cp -r agents/ ~/.config/opencode/agents/
 cp -r skills/ ~/.config/opencode/skills/
+cp -r commands/ ~/.config/opencode/commands/
 ```
 
 ### Claude Code Compatibility
@@ -194,6 +207,8 @@ The agents reference several MCP servers. Configure them in your `opencode.json`
 | Read-only agents for review roles | Structural safety: prompt-engineer and security-reviewer can't accidentally modify code |
 | Documentation-first mandate | LangChain (and others) change fast. Forces lookup before implementation. |
 | Dual-model by default | Real-world LLM projects use both cheap local models and expensive cloud models |
+| ADR-driven decisions | Architectural decisions captured in `docs/decisions/` using MADR template. Deliberation → ADR pipeline. |
+| `mcp_*-docs_*` wildcard | Research agents auto-discover new docs MCP tools without config changes |
 
 ## License
 
