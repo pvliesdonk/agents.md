@@ -31,7 +31,22 @@ Look for:
 - Architectural decisions that might be relevant
 - Related design patterns or constraints
 
-### 3. Get Discussion Category
+### 3. Enable Discussions (if needed)
+
+Check if discussions are enabled, and enable them if not:
+
+```bash
+# Check if discussions are enabled
+HAS_DISCUSSIONS=$(gh api repos/OWNER/REPO --jq '.has_discussions')
+
+if [ "$HAS_DISCUSSIONS" != "true" ]; then
+  # Enable discussions
+  gh api repos/OWNER/REPO --method PATCH --field has_discussions=true
+  echo "✓ Enabled GitHub Discussions on the repository"
+fi
+```
+
+### 4. Get Discussion Category
 
 Query the repository's discussion categories and select "Ideas" (or fallback to "General"):
 
@@ -50,7 +65,7 @@ gh api graphql -f query='
 ' --jq '.data.repository.discussionCategories.nodes[] | select(.name=="Ideas" or .name=="General") | .id' | head -1
 ```
 
-### 4. Create the Discussion
+### 5. Create the Discussion
 
 Use the GraphQL API to create the discussion:
 
@@ -86,7 +101,7 @@ gh api graphql -f query='
 ' --jq '.data.repository.id'
 ```
 
-### 5. Compose the Discussion Body
+### 6. Compose the Discussion Body
 
 The discussion body should include:
 
@@ -118,7 +133,7 @@ Example:
 **Multi-agent deliberation:** This discussion will be evaluated by Claude Opus 4.6, Gemini 3 Pro, and GPT-5.2 agents. Each will investigate independently and provide their analysis.
 ```
 
-### 6. Report the Result
+### 7. Report the Result
 
 After creating the discussion, report:
 - Discussion number
