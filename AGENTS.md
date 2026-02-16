@@ -89,6 +89,17 @@ Load the `dual-model-strategy` skill for detailed patterns.
 - If a task is complex, propose a plan before executing.
 - Flag risks and edge cases proactively.
 
+## Documentation Standards
+
+- **ADRs (Architecture Decision Records):** For decisions with lasting impact, create an ADR in `docs/decisions/` using the MADR template. Each record captures context, decision drivers, considered options, outcome, and consequences.
+- **ADR format:** `docs/decisions/NNNN-short-title.md`, numbered sequentially, status tracked (Proposed → Accepted → Deprecated → Superseded by NNNN).
+- **Immutability:** Never edit accepted ADRs — supersede them with a new record that links back.
+- **Link deliberations:** If a decision came from a `/deliberate-*` session, link the GitHub Discussion in the ADR.
+- **When to create ADRs:** Architectural changes, technology choices, pattern adoptions, significant trade-offs. When uncertain whether something warrants an ADR, flag it and ask.
+- **API documentation:** Google-style docstrings mandatory for all public functions/methods. Include type hints, Args, Returns, Raises, and usage Examples.
+- **Code comments:** Explain WHY, not WHAT. Link to issues/discussions for non-obvious decisions.
+- **Changelogs:** Generated from conventional commits via semantic-release. Write commit messages for the human reader, not the machine.
+
 ## Skills
 
 Load skills on-demand when you need reference patterns for a specific domain:
@@ -104,6 +115,11 @@ Load skills on-demand when you need reference patterns for a specific domain:
 | `cli-patterns` | typer + rich CLI design, output formatting, error UX |
 | `memory-patterns` | mem0 integration, hook-based auto-capture, scoping strategy |
 | `deliberation` | Multi-agent debate protocol, comment structure, convergence rules |
+| `documentation-patterns` | ADR templates, API doc standards, technical writing, changelogs |
+| `testing-patterns` | pytest, fixtures, mocking, property-based testing, async tests, coverage |
+| `observability-patterns` | structlog setup, LLM monitoring, OpenTelemetry, metrics, PII redaction |
+| `data-patterns` | RAG chunking, vector stores, data validation, schema evolution |
+| `infrastructure-patterns` | Docker, Kubernetes, secrets management, IaC, CI/CD pipelines |
 
 ## Delegation
 
@@ -117,6 +133,9 @@ Use subagents for specialized tasks:
 | `@security-reviewer` | Security audits, dependency checks, secrets review | Read-only (audit) | — | Record security patterns, vulnerabilities found |
 | `@github-ops` | Issues, PRs, releases, CI/CD, stacked PR management | Full write + gh CLI | `github-workflow`, `release-flow` | Remember PR patterns, team preferences |
 | `@frontend-dev` | CLI (typer/rich), web UI, user-facing interfaces | Full write | `cli-patterns` | Store UI/UX decisions, user feedback |
+| `@technical-writer` | ADRs, API docs, technical writing, changelogs | Read + ask-to-write | `documentation-patterns` | Store doc patterns, ADR history |
+| `@test-engineer` | Test strategy, pytest patterns, coverage, TDD | Read + ask-to-write | `testing-patterns` | Track flaky tests, effective patterns |
+| `@devops-engineer` | Docker, K8s, IaC, secrets, deployment | Full write | `infrastructure-patterns` | Store infra decisions, deployment patterns |
 
 ### Multi-Agent Deliberation
 

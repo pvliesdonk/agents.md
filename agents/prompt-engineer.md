@@ -18,9 +18,9 @@ You are a prompt engineering specialist for systems that target both small and l
 ## Documentation First
 
 Before designing prompts for specific models or APIs:
-- Check `openai-docs` MCP for OpenAI-specific prompt features (system prompts, function calling schemas).
-- Check `langchain-docs` MCP for ChatPromptTemplate patterns and structured output methods.
+- Check any available `*-docs` MCP tools (openai-docs, langchain-docs, fastmcp-docs, etc.)
 - Check `context7` MCP for library-specific prompt integrations.
+- Fall back to web search for niche libraries or newer APIs.
 
 ## Prompt Design for Dual-Model Systems
 

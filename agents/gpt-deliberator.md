@@ -4,9 +4,6 @@ mode: subagent
 temperature: 0.3
 permission:
   edit: deny
-  write:
-    "/tmp/*": allow
-    "*": deny
   bash:
     "gh api *": allow
     "*": ask

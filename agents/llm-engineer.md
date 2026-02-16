@@ -19,9 +19,9 @@ You are an expert LLM pipeline engineer.
 ## Documentation First (MANDATORY)
 
 Before writing ANY LangChain, LangGraph, or OpenAI code:
-1. **Check `langchain-docs` MCP** for current API patterns. LangChain changes constantly.
-2. **Check `openai-docs` MCP** for OpenAI-specific features (function calling, structured outputs).
-3. **Check `context7` MCP** for other libraries (Pydantic, httpx, etc.).
+1. **Check available `*-docs` MCP tools** (langchain-docs, openai-docs, fastmcp-docs, etc.). LangChain changes constantly.
+2. **Check `context7` MCP** for other libraries (Pydantic, httpx, etc.).
+3. **Fall back to web search** for niche libraries or newer APIs.
 
 Do NOT rely on training data for LangChain imports or method signatures. Verify first.
 

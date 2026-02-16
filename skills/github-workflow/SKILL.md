@@ -1,58 +1,76 @@
 ---
 name: github-workflow
-description: GitHub development workflow — stacked PRs with stack-pr and git-branchless, gh CLI recipes, issue tracking discipline, PR review handling, and CI/CD patterns
+description: GitHub development workflow — stacked PRs with vanilla Git branches, gh CLI recipes, issue tracking discipline, PR review handling, and CI/CD patterns
 ---
 
-## Stacked PR Workflow (stack-pr + git-branchless)
+## Stacked PR Workflow (Vanilla Git)
 
 ### Why Stacked PRs
 - Keeps PRs small (150-400 lines target, 800 hard limit).
-- Each commit = one reviewable PR, merged bottom-up.
-- `stack-pr` handles branch creation, PR dependencies, and post-merge rebasing.
-- `git-branchless` handles local commit management (amend, reorder, rebase).
+- Each branch = one reviewable PR, merged bottom-up.
+- Uses only vanilla Git + `gh` CLI. No external stacking tools.
 
-### Setup
+### Why Vanilla Git (Not stack-pr / git-branchless)
+- Preserves atomic commits (multiple commits per PR, not one fat commit).
+- No external tool dependencies or version breakage.
+- CI triggers work reliably (no force-push hash mismatches).
+- Full control over merge strategy.
+
+### Creating a Stack
 ```bash
-uv tool install stack-pr      # Requires gh CLI
-cargo install --locked git-branchless  # Or: brew install git-branchless
-git branchless init            # Per-repo, one-time
-```
+# Start from fresh main
+git fetch origin main
+git checkout -b feat/X-models origin/main
 
-### Daily Workflow
-```bash
-git fetch origin main && git checkout origin/main
-
-# Work in commits (not branches)
+# Work with multiple atomic commits per branch
 git add -p && git commit -m "refactor(models): extract base class"
-git add -p && git commit -m "feat(models): add new entity type"
+git add -p && git commit -m "feat(models): add field validation"
+git push -u origin feat/X-models
+gh pr create --base main --fill
 
-git branchless smartlog        # View stack graph
-stack-pr view                  # Preview (read-only)
-stack-pr submit                # Create/update PRs
+# Stack the next PR on top
+git checkout -b feat/X-mutations feat/X-models
+git add -p && git commit -m "feat(mutations): add create mutation"
+git add -p && git commit -m "test(mutations): add mutation tests"
+git push -u origin feat/X-mutations
+gh pr create --base feat/X-models --fill
 ```
 
-### Amending Mid-Stack
+### Addressing Review Comments
 ```bash
-git prev / git next            # Navigate stack
-# Make changes
-git add -p && git amend        # Auto-rebases descendants
-stack-pr submit                # Update all PRs
+# Add NEW commits — never amend or rebase branches with open PRs
+git checkout feat/X-models
+git add -p && git commit -m "fix(models): address review feedback"
+git push
+
+# Propagate to dependent branches via merge (not rebase)
+git checkout feat/X-mutations
+git merge feat/X-models
+git push
 ```
 
-### Merging
+### Merging (Bottom-Up) — CRITICAL Pattern
 ```bash
-stack-pr land                  # Merge bottom PR, rebase rest
+# Step 1: Retarget NEXT PR before merging current (prevents auto-close)
+gh pr edit <PR2-number> --base main
 
-# If merged via GitHub UI:
-git sync                       # Rebase onto updated main
-stack-pr submit                # Update remaining PRs
+# Step 2: Merge the bottom PR
+gh pr merge <PR1-number> --squash --delete-branch
+
+# Step 3: Rebase next PR onto updated main (removes duplicate commits)
+git checkout feat/X-mutations
+git fetch origin main
+git rebase origin/main
+git push --force-with-lease   # Acceptable ONLY after parent squash-merge
+
+# Repeat: retarget PR3 → main, merge PR2, rebase PR3
 ```
 
 ### Danger Zone
-- **NEVER** merge stacked PRs manually with squash — causes orphans.
-- **NEVER** use `git submit --forge github` (git-branchless) — it's broken.
-- **NEVER** delete a base branch manually — closes all dependent PRs.
-- If stuck: `stack-pr abandon` cleans up, then `stack-pr submit` recreates.
+- **NEVER** `git commit --amend` or `git rebase` on branches with open PRs (except after parent squash-merge).
+- **NEVER** `git push --force` on branches with open PRs. Use `--force-with-lease` only in the merge step above.
+- **NEVER** delete a base branch before retargeting dependent PRs — closes them.
+- **CI not triggering?** Close and reopen the PR: `gh pr close <n> && gh pr reopen <n>`
 
 ## gh CLI Recipes
 

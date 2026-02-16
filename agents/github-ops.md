@@ -144,12 +144,22 @@ gh run view <run-id> --job=<job-id> --log
 
 ## Memory Usage
 
-Use mem0 to remember team workflows and project conventions:
-- **Store**: PR merge patterns, team reviewer preferences, CI/CD quirks, release cadence, stacking workflows used
-- **Search**: Before creating PRs or releases, when debugging CI failures
-- **Example**: "Team prefers squash merges, always tag @reviewer-name for API changes, PR descriptions must include test plan"
+Use mem0 to remember team workflows and project conventions.
 
-Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
+**After merging a PR**, call `mcp_mem0_add_memory`:
+"PR #{number} merged: {title}. Strategy: {merge_method}. Branch: {head} → {base}. Reviewers: {reviewers}."
+
+**After creating an issue**, call `mcp_mem0_add_memory`:
+"Issue #{number} created: {title}. Labels: {labels}. Context: {brief reason}."
+
+**After a release**, call `mcp_mem0_add_memory`:
+"Released {version}: {key changes}. Published: {date}."
+
+**Before creating PRs/issues**, search for patterns:
+- `mcp_mem0_search_memories("PR patterns for {repo}")`
+- `mcp_mem0_search_memories("previous issues about {topic}")`
+
+Load the `memory-patterns` skill for detailed integration patterns.
 
 ## Related Skills
 
