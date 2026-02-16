@@ -18,9 +18,9 @@ REPO_URL=$(git config --get remote.origin.url)
 # Extract owner/repo from URL
 ```
 
-### 2. Search Memory for Related Decisions
+### 2. Search Memory for Related Decisions (if mem0 configured)
 
-Before creating the discussion, search mem0 for relevant prior architectural decisions:
+If mem0 is configured, search for relevant prior architectural decisions:
 
 ```
 Search query: [extract key topic from problem statement]
@@ -30,6 +30,8 @@ Look for:
 - Prior deliberations on similar topics
 - Architectural decisions that might be relevant
 - Related design patterns or constraints
+
+**If mem0 is not configured or the search fails**, skip this step and note in the discussion body: "mem0 not configured - no prior decision search performed."
 
 ### 3. Enable Discussions (if needed)
 

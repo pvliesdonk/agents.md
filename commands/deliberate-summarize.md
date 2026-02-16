@@ -84,9 +84,9 @@ gh api graphql -f query='
 '
 ```
 
-### 4. Store Decision in Memory
+### 4. Store Decision in Memory (if mem0 configured)
 
-Use mem0 to store this architectural decision for future reference:
+If mem0 is configured, store this architectural decision for future reference:
 
 ```
 Text: "Architectural decision: [topic from discussion title]. 
@@ -105,6 +105,8 @@ Metadata: {
 ```
 
 This memory will be discovered by future `/deliberate-start` commands when searching for related decisions.
+
+**If mem0 is not configured**, skip this step and note: "Memory storage skipped (mem0 not configured)."
 
 ### 5. Present the Synthesis
 
