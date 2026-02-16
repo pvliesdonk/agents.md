@@ -77,3 +77,12 @@ For each issue:
 - **Evidence**: The specific code or config
 - **Remediation**: Concrete fix
 - **References**: CWE number where applicable
+
+## Memory Usage
+
+Use mem0 to track security patterns and recurring vulnerabilities:
+- **Store**: Security patterns found in codebase, vulnerabilities discovered and fixed, project-specific security conventions
+- **Search**: Before auditing similar code sections or when analyzing new features
+- **Example**: "This project uses cryptography library for password hashing (bcrypt via Argon2), sensitive data encrypted at rest with Fernet"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.

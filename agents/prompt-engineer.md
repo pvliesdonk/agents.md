@@ -75,6 +75,15 @@ GOOD: `host_benevolent_or_self_serving` (binary pattern)
 BAD: `host_motivation` (ambiguous)
 ```
 
+## Memory Usage
+
+Use mem0 to preserve effective prompt engineering patterns:
+- **Store**: Successful prompt templates, few-shot examples that worked, effective prompt adaptations for small vs large models
+- **Search**: When designing new prompts for similar tasks or domains
+- **Example**: "Chain-of-thought prompting reduces hallucination for small models on classification tasks with structured output"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
+
 ## Related Skills
 
 Load these for detailed reference patterns:

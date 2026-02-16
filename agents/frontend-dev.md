@@ -110,6 +110,15 @@ async def generate():
     return StreamingResponse(stream_generation(), media_type="text/event-stream")
 ```
 
+## Memory Usage
+
+Use mem0 to track UI/UX decisions and user preferences:
+- **Store**: UI/UX decisions, user feedback, component patterns, CLI verbosity preferences, error message styles that worked
+- **Search**: Before implementing similar UI features or CLI commands
+- **Example**: "User prefers spinner over progress bar for indeterminate operations, CLI output should use stderr for UI/stdout for data"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
+
 ## Related Skills
 
 Load `cli-patterns` for detailed reference on typer commands, verbosity, progress, tables, and error UX.

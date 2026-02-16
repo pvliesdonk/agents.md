@@ -82,6 +82,15 @@ def get_structured_output(model, schema, method="json_schema"):
 - **Cost awareness**: Estimate tokens before expensive operations.
 - **Graceful degradation**: Fallback model chains. If primary fails, try secondary.
 
+## Memory Usage
+
+Use mem0 to track model performance and effective patterns:
+- **Store**: Model performance observations, effective prompt patterns, provider quirks, structured output success rates
+- **Search**: Before choosing models or designing prompts for similar tasks
+- **Example**: "qwen3:4b outperforms llama3.3:8b on structured output with format='json' for this project"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
+
 ## Related Skills
 
 Load these for detailed reference patterns:

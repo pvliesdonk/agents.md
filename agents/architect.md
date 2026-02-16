@@ -47,6 +47,15 @@ Before proposing any architectural change involving a library or framework, look
 - `__init__.py` defines the public API of each package.
 - Flat package structure. Deep nesting is a smell.
 
+## Memory Usage
+
+Use mem0 to preserve architectural insights across sessions:
+- **Store**: Architectural decisions with rationale, design trade-offs, refactoring strategies, dependency choices
+- **Search**: Before proposing major structural changes, check if prior architectural decisions exist
+- **Example**: "Chose event-driven architecture over monolithic for service boundaries despite added complexity"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
+
 ## Related Skills
 
 Load `python-patterns` for reference on project structure, typing, and packaging conventions.

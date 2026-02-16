@@ -1,5 +1,5 @@
 ---
-description: GitHub operations specialist. Use for issue management, PR creation/review, stacked PR workflows (stack-pr + git-branchless), release management, CI/CD debugging, and GitHub Actions. Has full tool access including gh CLI and GitHub MCP.
+description: GitHub operations specialist. Use for issue management, PR creation/review, stacked PR workflows (vanilla Git branches), release management, CI/CD debugging, and GitHub Actions. Has full tool access including gh CLI and GitHub MCP.
 mode: subagent
 temperature: 0.1
 permission:
@@ -8,7 +8,6 @@ permission:
     "*": ask
     "gh *": allow
     "git *": allow
-    "stack-pr *": allow
     "grep *": allow
     "rg *": allow
     "find *": allow
@@ -33,59 +32,67 @@ Choose the right tool for the job:
 
 **Default to `gh` CLI** for simple operations. Use GitHub MCP when you need structured data back or complex queries.
 
-## Stacked PR Workflow
+## Stacked PR Workflow (Vanilla Git)
 
-This is the primary PR workflow for multi-commit changes. Uses `stack-pr` for PR management and `git-branchless` for local commit management.
+This is the primary PR workflow for multi-commit changes. Uses only vanilla Git + `gh` CLI — no external stacking tools.
 
 ### Creating a Stack
 ```bash
-# Always start from fresh main
+# Start from fresh main
 git fetch origin main
-git checkout origin/main
+git checkout -b feat/X-models origin/main
 
-# Create commits (one logical change each)
+# Multiple atomic commits per branch
 git add -p && git commit -m "refactor(models): extract base class"
 git add -p && git commit -m "feat(models): add new entity type"
-git add -p && git commit -m "test: add entity validation tests"
+git push -u origin feat/X-models
+gh pr create --base main --fill
 
-# View the stack
-git branchless smartlog
-
-# Preview then submit
-stack-pr view          # Read-only preview
-stack-pr submit        # Creates one PR per commit
+# Stack the next PR on top
+git checkout -b feat/X-mutations feat/X-models
+git add -p && git commit -m "feat(mutations): add create mutation"
+git add -p && git commit -m "test: add mutation validation tests"
+git push -u origin feat/X-mutations
+gh pr create --base feat/X-models --fill
 ```
 
 ### Handling Review Feedback
 ```bash
-# Navigate to the commit that needs changes
-git prev / git next
+# Add NEW commits — never amend or rebase branches with open PRs
+git checkout feat/X-models
+git add -p && git commit -m "fix(models): address review feedback"
+git push
 
-# Make changes and amend (auto-rebases descendants)
-git add -p
-git amend
-
-# Update all PRs
-stack-pr submit
+# Propagate to dependent branches via merge (not rebase)
+git checkout feat/X-mutations
+git merge feat/X-models
+git push
 ```
 
-### Merging a Stack
+### Merging a Stack (Bottom-Up)
 ```bash
-# Land bottom PR (squash-merge + rebase remaining)
-stack-pr land
+# CRITICAL: Retarget NEXT PR before merging current (prevents auto-close)
+gh pr edit <PR2-number> --base main
 
-# If merged via GitHub UI instead:
-git sync              # Rebase stack onto updated main
-stack-pr submit       # Update remaining PRs
+# Merge the bottom PR
+gh pr merge <PR1-number> --squash --delete-branch
+
+# Rebase next PR onto updated main (removes duplicate commits)
+git checkout feat/X-mutations
+git fetch origin main
+git rebase origin/main
+git push --force-with-lease   # Acceptable ONLY after parent squash-merge
+
+# Repeat: retarget PR3 → main, merge PR2, rebase PR3
 ```
 
 ### Common Stacking Problems
 
-**Merge conflicts after landing**: Run `git sync` then `stack-pr submit`. git-branchless auto-rebases.
+**PR auto-closed**: Base branch was deleted before retargeting. Always `gh pr edit <next> --base main` BEFORE merging current.
 
-**PR closed unexpectedly**: If a base branch is deleted (e.g., by GitHub auto-delete), dependent PRs may close. Run `stack-pr abandon` to clean up, then `stack-pr submit` to recreate.
+**CI not triggering**: Close and reopen: `gh pr close <n> && gh pr reopen <n>`
 
-**Squash merge orphans**: Never merge stacked PRs manually with squash. Always use `stack-pr land` which handles the rebase.
+**Duplicate commits after merge**: Normal — the rebase step (`git rebase origin/main` + `--force-with-lease`) removes them.
 
 ## Issue Management
 
@@ -134,6 +141,15 @@ gh run rerun <run-id> --failed
 # View specific job logs
 gh run view <run-id> --job=<job-id> --log
 ```
+
+## Memory Usage
+
+Use mem0 to remember team workflows and project conventions:
+- **Store**: PR merge patterns, team reviewer preferences, CI/CD quirks, release cadence, stacking workflows used
+- **Search**: Before creating PRs or releases, when debugging CI failures
+- **Example**: "Team prefers squash merges, always tag @reviewer-name for API changes, PR descriptions must include test plan"
+
+Load the `memory-patterns` skill for detailed integration patterns and hook-based auto-capture.
 
 ## Related Skills
 
