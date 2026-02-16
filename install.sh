@@ -50,6 +50,7 @@ fi
 
 # Create directories
 mkdir -p "${DEST}/agents"
+mkdir -p "${DEST}/commands"
 for skill_dir in "${SCRIPT_DIR}/${SKILLS_SRC}"/*/; do
     name="$(basename "${skill_dir}")"
     mkdir -p "${DEST}/skills/${name}"
@@ -82,11 +83,23 @@ for skill_dir in "${SCRIPT_DIR}/${SKILLS_SRC}"/*/; do
     fi
 done
 
+# Install commands
+if [[ -d "${SCRIPT_DIR}/commands" ]]; then
+    for command in "${SCRIPT_DIR}/commands"/*.md; do
+        if [[ -f "${command}" ]]; then
+            name="$(basename "${command}")"
+            cp "${command}" "${DEST}/commands/${name}"
+            echo "  commands/${name}"
+        fi
+    done
+fi
+
 echo "---"
 echo ""
 
 agent_count=$(ls "${DEST}/agents/"*.md 2>/dev/null | wc -l | tr -d ' ')
 skill_count=$(ls "${DEST}/skills/"*/SKILL.md 2>/dev/null | wc -l | tr -d ' ')
-echo "Installed: ${agent_count} agents, ${skill_count} skills"
+command_count=$(ls "${DEST}/commands/"*.md 2>/dev/null | wc -l | tr -d ' ')
+echo "Installed: ${agent_count} agents, ${skill_count} skills, ${command_count} commands"
 echo ""
 echo "${RESTART_MSG}"

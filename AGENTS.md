@@ -103,6 +103,7 @@ Load skills on-demand when you need reference patterns for a specific domain:
 | `release-flow` | semantic-release, PyPI, Docker, GitHub Actions pipelines |
 | `cli-patterns` | typer + rich CLI design, output formatting, error UX |
 | `memory-patterns` | mem0 integration, hook-based auto-capture, scoping strategy |
+| `deliberation` | Multi-agent debate protocol, comment structure, convergence rules |
 
 ## Delegation
 
@@ -116,3 +117,14 @@ Use subagents for specialized tasks:
 | `@security-reviewer` | Security audits, dependency checks, secrets review | Read-only (audit) | — | Record security patterns, vulnerabilities found |
 | `@github-ops` | Issues, PRs, releases, CI/CD, stacked PR management | Full write + gh CLI | `github-workflow`, `release-flow` | Remember PR patterns, team preferences |
 | `@frontend-dev` | CLI (typer/rich), web UI, user-facing interfaces | Full write | `cli-patterns` | Store UI/UX decisions, user feedback |
+
+### Multi-Agent Deliberation
+
+For complex architectural decisions, use the deliberation system with heterogeneous models:
+
+**Commands:**
+- `/deliberate-start "problem description"` — Creates GitHub Discussion, searches mem0 for related decisions, posts problem
+- `/deliberate-round <discussion-number>` — Spawns all three deliberator agents in parallel for one round
+- `/deliberate-summarize <discussion-number>` — Synthesizes findings, posts summary, stores mem0 memory
+
+**When to use:** Complex design problems with multiple valid approaches, architectural trade-offs, decisions benefiting from diverse model perspectives. Research shows heterogeneous models (different architectures) catch different blind spots. The GitHub Discussion is the persistent shared state — no context carried between rounds.

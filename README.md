@@ -16,7 +16,7 @@ The foundation that applies to every session:
 - **Skill directory** — tells agents which skills to load and when
 - **Delegation table** — routes tasks to the right subagent
 
-### 6 Subagents
+### 9 Subagents
 
 | Agent | Role | Access |
 |-------|------|--------|
@@ -26,10 +26,13 @@ The foundation that applies to every session:
 | `@security-reviewer` | Security audits, CVEs, secrets, LLM-specific risks | Read-only (audit) |
 | `@github-ops` | Issues, PRs, stacked PRs, releases, CI/CD | Full write + gh CLI |
 | `@frontend-dev` | CLI (typer/rich), web UI, terminal UX | Full write |
+| `@claude-deliberator` | Multi-agent architectural deliberation (Claude Opus 4.6) | Read-only + GitHub Discussion comments |
+| `@gemini-deliberator` | Multi-agent architectural deliberation (Gemini 3 Pro) | Read-only + GitHub Discussion comments |
+| `@gpt-deliberator` | Multi-agent architectural deliberation (GPT-5.2) | Read-only + GitHub Discussion comments |
 
 Each agent has scoped permissions (edit/bash allow/ask/deny) and references its related skills.
 
-### 7 On-Demand Skills
+### 8 On-Demand Skills
 
 Skills are loaded only when needed, saving context tokens:
 
@@ -42,6 +45,8 @@ Skills are loaded only when needed, saving context tokens:
 | `github-workflow` | Stacked PRs (vanilla Git branches), gh CLI, issue discipline |
 | `release-flow` | semantic-release, PyPI trusted publishing, Docker, GitHub Actions |
 | `cli-patterns` | typer + rich: commands, progress, tables, error UX, verbosity |
+| `deliberation` | Multi-agent debate protocol, comment structure, convergence rules |
+| `memory-patterns` | mem0 integration, scoping strategy, hook-based capture |
 
 ## How It Fits Together
 
@@ -92,6 +97,42 @@ cp -r skills/ ~/.claude/skills/
 ```
 
 Note: Claude Code doesn't support custom subagents, but the AGENTS.md rules and skills work.
+
+## Multi-Agent Deliberation System
+
+This package includes a system for running multi-agent architectural debates using heterogeneous models (Claude Opus 4.6, Gemini 3 Pro, GPT-5.2) on complex design problems.
+
+### How It Works
+
+```
+/deliberate-start "How should we handle feature X?"
+  └── Creates GitHub Discussion, searches mem0 for related decisions, posts problem
+
+/deliberate-round 910
+  ├── Spawns @claude-deliberator  (independent investigation → comment)
+  ├── Spawns @gemini-deliberator  (independent investigation → comment)
+  └── Spawns @gpt-deliberator     (independent investigation → comment)
+
+/deliberate-summarize 910
+  └── Synthesizes findings → posts summary → stores mem0 memory
+```
+
+Each deliberator agent:
+- Uses a different model with maximum reasoning enabled
+- Investigates the codebase and external docs independently
+- Posts a comment to the GitHub Discussion with their findings
+- Cannot modify code (read-only + comment-only permissions)
+
+### Why Heterogeneous Debate Works
+
+Research on multi-agent debate (MAD) shows that **different model architectures** (Claude vs Gemini vs GPT) catch different blind spots and provide the most value for complex, ambiguous design problems. The GitHub Discussion serves as the persistent shared state across rounds.
+
+### When to Use It
+
+- Complex architectural decisions with multiple valid approaches
+- Design trade-offs that benefit from diverse perspectives
+- Problems where "clearing context gets new insights" (each round is fresh)
+- Decisions you want documented with full deliberation history
 
 ## Customization
 
