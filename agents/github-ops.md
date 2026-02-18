@@ -161,11 +161,31 @@ Use mem0 to remember team workflows and project conventions.
 
 Load the `memory-patterns` skill for detailed integration patterns.
 
+## Merge-Stack Handoff (from pr-review-merge skill)
+
+When invoked by the `pr-review-merge` skill to merge a stack, execute immediately:
+
+1. **Verify** CI is green on all PRs before starting: `gh pr checks <number>`
+2. **Retarget** the second-from-bottom PR to main BEFORE merging the bottom one
+3. **Squash-merge** the bottom PR: `gh pr merge <N> --squash --delete-branch`
+4. **Rebase** next branch onto updated main (removes duplicate commits):
+   ```bash
+   git fetch origin main
+   git rebase origin/main <branch>
+   git push --force-with-lease
+   ```
+5. **Wait for CI** on the rebased PR before proceeding
+6. Repeat steps 2-5 up the stack
+7. **Store memory** after each merge (see Memory Usage above)
+
+Do not ask for confirmation — the primary agent already has authorization from the user.
+
 ## Related Skills
 
 Load these for detailed reference patterns:
 - `github-workflow` — stacked PR workflow, gh CLI recipes, issue discipline, commit conventions
 - `release-flow` — semantic-release pipeline, PyPI publishing, Docker builds, GitHub Actions
+- `pr-review-merge` — full review resolution workflow; @github-ops handles Step 7 (merge)
 
 ## PR Description Template
 
