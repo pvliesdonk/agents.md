@@ -41,9 +41,11 @@ Check each reviewer's decision before deciding how to proceed:
 reviewer has explicitly withdrawn their blocking status or a maintainer has
 dismissed the review with documented rationale.
 
-**Conflicting feedback:** When two reviewers disagree, use best engineering judgment,
-document the decision in a PR comment explaining what was chosen and why, then
-re-request review from the conflicting parties.
+**Conflicting feedback:** When two reviewers disagree, use best engineering
+judgment to pick the better approach. Post a PR comment documenting what was
+chosen and why. If the disagreement surfaces a genuine design question, create
+a GitHub issue for follow-up discussion and link it in the comment. Then
+proceed — do not stall waiting for consensus.
 
 ## Step 3: Address Every Finding — No Exceptions
 
@@ -117,15 +119,24 @@ Use conventional commit prefixes:
 - `test:` for test additions
 - `docs:` for documentation updates
 
+**Never amend commits** — always create new commits for review fixes. Amending
+rewrites history, causing confusion for reviewers who already read the diff.
+If the commit history looks noisy, that is fine — it is an accurate record of
+the review cycle. Squash-merging will clean it up at merge time.
+
 ## Step 6: Re-Request Review
 
-After pushing, notify reviewers:
+After pushing, notify reviewers. If the project's CI/CD pipeline automatically
+triggers re-review (e.g. via a GitHub Action or branch protection rule), that
+is sufficient — do not manually re-request if automation handles it.
+
+If re-review is not automatic:
 
 ```bash
-# Re-request review from everyone who reviewed
+# Re-request review from everyone who left CHANGES_REQUESTED or comments
 gh pr edit <number> --add-reviewer <reviewer1>,<reviewer2>
 
-# Or leave a comment summarising what was addressed
+# Leave a comment summarising what was addressed
 gh pr comment <number> --body "Addressed all review comments:
 - Fixed [X] (commit abc1234)
 - Renamed [Y] per suggestion
@@ -134,8 +145,14 @@ gh pr comment <number> --body "Addressed all review comments:
 Ready for re-review."
 ```
 
-Do not merge immediately after pushing fixes — give reviewers a chance to
-re-review unless they explicitly said "just make this one change then LGTM".
+**After re-requesting, stop.** Do not merge until:
+- The reviewer approves (LGTM / APPROVED), or
+- The reviewer has not responded after a reasonable window AND the
+  human user explicitly asks to proceed
+
+If approval is not received, either wait or ask the user to invoke
+this skill again after the review comes in. Do not self-approve or
+merge over a pending review.
 
 ## Step 7: Merge the Stack (Bottom-to-Top)
 
@@ -144,30 +161,59 @@ unresolved `CHANGES_REQUESTED` reviews.
 
 **Merge order: always bottom-to-top.** Never merge a PR before its base is merged.
 
+### Squash-Merge and the Double-Change Problem
+
+Squash merging stacks requires special care. When PR-A is squash-merged into
+main, its commits become a single new squash commit on main. PR-B, which was
+branched from PR-A, still contains all of PR-A's original commits in its
+history. After retargeting PR-B to main, git sees those commits as *different*
+from the squash commit — producing a conflict or spurious diff of changes that
+are already in main.
+
+**The fix:** After retargeting, rebase PR-B's branch onto the new main to drop
+the already-merged commits before merging:
+
 ```bash
 # For a stack: main <- PR-A (#41) <- PR-B (#42) <- PR-C (#43)
 
-# 1. Merge the bottom PR (already targets main)
-gh pr merge 41 --squash --delete-branch   # or --merge, per project convention
+# 1. Squash-merge the bottom PR
+gh pr merge 41 --squash --delete-branch
+git checkout main && git pull
 
-# 2. Retarget the next PR to main (its base just merged)
+# 2. Rebase PR-B onto the new main (drops PR-A's commits, keeps only PR-B's work)
+git checkout branch-b
+git rebase main          # resolves any double-change conflicts here
+git push --force-with-lease origin branch-b
+
+# 3. Retarget PR-B to main
 gh pr edit 42 --base main
 
-# 3. Verify CI is green on #42 after retarget (base change can affect checks)
+# 4. Verify CI is green (rebase changes the commit SHAs)
 gh pr checks 42 --watch
 
-# 4. Merge #42
+# 5. Squash-merge PR-B
 gh pr merge 42 --squash --delete-branch
+git checkout main && git pull
 
-# 5. Retarget #43 to main, verify, merge
+# 6. Repeat for PR-C
+git checkout branch-c
+git rebase main
+git push --force-with-lease origin branch-c
 gh pr edit 43 --base main
 gh pr checks 43 --watch
 gh pr merge 43 --squash --delete-branch
 ```
 
-**If CI fails after a retarget:** Do not merge. Investigate the failure — the
-new base may have introduced a conflict or broken a dependency. Fix it, push,
-wait for CI to pass.
+**`--force-with-lease` not `--force`** — verifies nobody else pushed to the
+branch since your last fetch. Safer than bare force push.
+
+**If rebase produces conflicts:** The conflict is real — two PRs touched the
+same code. Resolve carefully, keeping both sets of intended changes, then
+continue the rebase (`git rebase --continue`).
+
+**If CI fails after a retarget/rebase:** Do not merge. Investigate — the new
+base may have broken a dependency. Fix, push (with --force-with-lease), wait
+for CI to pass.
 
 **If a PR has no approval after the base merge:** Do not merge. Request review.
 
@@ -189,8 +235,13 @@ If the merge triggers a release, load the `release-flow` skill.
   pull `get_review_comments` separately; review bodies and inline comments are
   different API endpoints
 - **Merging top-down** — always bottom-to-top, or branches won't retarget cleanly
-- **Skipping CI check after retarget** — the base change is a new commit context;
-  CI must re-run
+- **Skipping CI check after retarget/rebase** — the base change is a new commit
+  context; CI must re-run before merging
 - **Resolving threads without acting** — marking resolved ≠ addressed
 - **Merging with CHANGES_REQUESTED from a silent reviewer** — always check review
   state explicitly, not just approval count
+- **Squash-merging without rebasing stacked branches** — produces double-change
+  conflicts; always rebase onto updated main before retargeting each subsequent PR
+- **Using `--force` instead of `--force-with-lease`** — bare force push silently
+  overwrites concurrent pushes; always use `--force-with-lease` after rebases
+- **Amending commits** — breaks reviewers' diff context; always create new commits
