@@ -120,6 +120,7 @@ Load skills on-demand when you need reference patterns for a specific domain:
 | `observability-patterns` | structlog setup, LLM monitoring, OpenTelemetry, metrics, PII redaction |
 | `data-patterns` | RAG chunking, vector stores, data validation, schema evolution |
 | `infrastructure-patterns` | Docker, Kubernetes, secrets management, IaC, CI/CD pipelines |
+| `pr-review-merge` | Gathering all PR feedback, addressing every finding, delegating to subagents, merging stacked PRs bottom-to-top |
 
 ## Delegation
 
