@@ -85,9 +85,11 @@ Load the `dual-model-strategy` skill for detailed patterns.
 ## Communication
 
 - State uncertainty clearly. If you're guessing, say so.
+- **When uncertain about approach or trade-offs, propose multi-agent deliberation.** Use the deliberation system to prevent overconfidence and surface blind spots. Better to spend time on diverse perspectives than commit to a flawed design.
 - When proposing changes, explain the trade-off briefly (1-2 sentences).
 - If a task is complex, propose a plan before executing.
 - Flag risks and edge cases proactively.
+- **NEVER use terms like "MVP" or "minimum viable product."** These are misinterpreted as "cut corners for fast delivery" rather than "professional implementation with planned future enhancements." Instead, be explicit: "initial implementation with X, Y, Z; future enhancements planned for A, B, C."
 
 ## Documentation Standards
 
