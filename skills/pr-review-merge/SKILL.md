@@ -125,21 +125,33 @@ list. Every comment gets exactly one of these replies:
 | Deferred | `"Good catch — out of scope here. Tracked in #N."` |
 | Intentionally not changed | `"Intentionally kept as-is: [reason]. Happy to discuss if you disagree."` |
 
-**PR comments** (issue-style) — reply with `gh pr comment`:
-```bash
-gh pr comment <pr-number> --body "Fixed in abc1234. Extracted the validation
-logic into a separate validator class as suggested."
+**Requires GitHub MCP access** — use the MCP tools directly, not `gh api`.
+
+**PR comments** (issue-style) — use `mcp__github__add_issue_comment`:
+```
+mcp__github__add_issue_comment
+  owner: <owner>
+  repo: <repo>
+  issue_number: <pr-number>   # PRs share the issue number namespace
+  body: "Fixed in abc1234. Extracted the validation logic into a separate
+         validator class as suggested."
 ```
 
-**Inline review comments** — reply to the specific thread, then resolve it:
-```bash
-# Reply to a specific review comment thread
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies \
-  --method POST --field body="Fixed in abc1234. Renamed for clarity."
+**Inline review comments** — reply to the thread using `mcp__github__add_reply_to_pull_request_comment`:
+```
+mcp__github__add_reply_to_pull_request_comment
+  owner: <owner>
+  repo: <repo>
+  pull_number: <pr-number>
+  comment_id: <comment_id>    # from get_review_comments in Step 1
+  body: "Fixed in abc1234. Renamed for clarity."
+```
 
-# Resolve the thread after replying
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id} \
-  --method PATCH --field "in_reply_to_id={comment_id}"
+After replying, resolve the thread via `gh api` (no MCP tool for resolution):
+```bash
+gh api repos/{owner}/{repo}/pulls/comments/{comment_id} \
+  --method PATCH --field "subjectType=line"
+# GitHub resolves threads via the GraphQL API — use gh if MCP lacks resolution support
 ```
 
 **Never resolve a thread without replying first.** Resolution without a reply

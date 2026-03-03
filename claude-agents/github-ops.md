@@ -17,7 +17,12 @@ Choose the right tool for the job:
 | Create/close/edit single issue | `gh issue create/close/edit` | Simpler, scriptable |
 | List/filter issues with complex queries | GitHub MCP `list_issues` | Better filtering, pagination |
 | Create PR from current branch | `gh pr create` | Integrates with local git state |
-| Review PR diff, add comments | GitHub MCP `add_pull_request_review_comment` | Structured review tools |
+| Read PR review comments (inline) | GitHub MCP `pull_request_read` (get_review_comments) | Separate endpoint from PR comments |
+| Read PR comments (issue-style) | GitHub MCP `pull_request_read` (get_comments) | Architectural/conceptual feedback lives here |
+| Read review decisions | GitHub MCP `pull_request_read` (get_reviews) | APPROVED / CHANGES_REQUESTED / COMMENTED |
+| Reply to inline review comment thread | GitHub MCP `add_reply_to_pull_request_comment` | Required for per-comment replies |
+| Reply to issue-style PR comment | GitHub MCP `add_issue_comment` | PRs share issue number namespace |
+| Add inline review comment | GitHub MCP `add_pull_request_review_comment` | Line-level code comments |
 | Check CI status | `gh pr checks` or `gh run list` | Quick terminal feedback |
 | Cross-repo queries | GitHub MCP `search_code`, `search_repositories` | MCP has broader search |
 | Bulk operations (label, assign) | GitHub MCP | Programmatic, batch-friendly |
