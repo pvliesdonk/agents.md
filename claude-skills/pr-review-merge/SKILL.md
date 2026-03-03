@@ -7,12 +7,11 @@ description: Resolving PR review comments and merging stacked PRs — gathering 
 
 **Execute this workflow immediately and completely.** Do not ask the user whether
 to proceed — loading this skill is authorization to act. The goal is: gather all
-feedback, address every finding, push fixes, then merge.
+feedback, address every finding, push fixes, hand off the merge to `@github-ops`.
 
 ## Step 1: Gather ALL Feedback
 
-Pull every feedback source before touching any code. Claude Code has access to
-GitHub MCP tools — use them in parallel:
+Pull every feedback source before touching any code:
 
 ```
 mcp__github__pull_request_read (get_review_comments)  # threaded inline comments
@@ -97,6 +96,43 @@ gh pr comment <number> --body "Addressed all review comments:
 - Created #N to track [deferred concern]"
 ```
 
+## Step 6a: Pre-Merge Conformance Gate (Mandatory)
+
+Before handing off to `@github-ops`, run `@architect-reviewer` on the **final state** of the branch:
+
+Invoke `@architect-reviewer` with:
+- The **design document sections** relevant to the changed code
+- The **full PR diff** (`gh pr diff <number>`)
+- The **original issue** being fixed, if one exists (`gh issue view <N>`)
+
+**This is a fresh run on the final diff — not a repeat of the pre-PR check.** Review cycles can negotiate away spec requirements ("just track it in a follow-up") or fixup commits can inadvertently break a previously CONFORMANT item.
+
+| Finding | Action |
+|---------|--------|
+| All CONFORMANT | Proceed to Step 6b |
+| Any PARTIAL | Fix, push, return to Step 5 |
+| Any MISSING / DEAD | Fix, push, return to Step 5 — no exceptions |
+
+## Step 6b: Bot Review Loop
+
+This project uses automated reviewers. Trigger both before merging:
+
+**Claude bot** reviews automatically on every push — no action needed.
+
+**Gemini bot** must be triggered manually:
+```bash
+gh pr comment <number> --body "/gemini review"
+```
+
+Then wait for both bots to complete their reviews. Evaluate:
+
+| Outcome | Action |
+|---------|--------|
+| Both LGTM or COMMENTED only | Proceed to Step 7 |
+| Either has CHANGES_REQUESTED | Address all findings (Step 3–5), push, Claude re-reviews automatically, post `/gemini review` again, repeat from Step 6b |
+
+**LGTM from both bots is the merge gate.** Do not hand off to `@github-ops` until this is satisfied.
+
 ## Step 7: Hand Off to @github-ops
 
 Invoke `@github-ops` to handle all git mechanics:
@@ -124,9 +160,9 @@ Do not store routine style fixes. Store patterns that will save time in future P
 
 ## Common Pitfalls
 
-- **Reading only review bodies, not inline comments** — always fetch `get_review_comments`
+- **Reading only review bodies, not inline comments** — always call `get_review_comments`
   separately; they are a different API endpoint from review decisions
-- **Reading only inline comments, not issue-style PR comments** — always fetch `get_comments`
+- **Reading only inline comments, not issue-style PR comments** — always call `get_comments`
   separately; reviewers use both locations for blocking feedback
 - **Marking threads resolved without acting** — resolved ≠ addressed
 - **Merging with CHANGES_REQUESTED outstanding** — always check review state explicitly

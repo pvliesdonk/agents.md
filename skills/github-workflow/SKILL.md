@@ -16,6 +16,68 @@ description: GitHub development workflow — stacked PRs with vanilla Git branch
 - CI triggers work reliably (no force-push hash mismatches).
 - Full control over merge strategy.
 
+## Before Creating a PR (Mandatory Gate)
+
+Run this checklist **before every `gh pr create`**, without exception.
+
+### Step 1: Run @architect-reviewer
+
+Invoke `@architect-reviewer` with:
+- The **design document sections** relevant to the changed code (search `docs/` for specs, ADRs, design docs — if none exist, note that in the PR body)
+- The **changed files** (`git diff origin/main --name-only`)
+- The **issue being fixed**, if one exists (`gh issue view <N>` — pass the full body)
+
+`@architect-reviewer` will produce a conformance table with CONFORMANT / PARTIAL / MISSING / DEAD per requirement.
+
+### Step 2: Act on the Findings
+
+| Finding | Action |
+|---------|--------|
+| All CONFORMANT | Proceed to Step 3 |
+| Any PARTIAL | Fix the gap, re-run `@architect-reviewer` |
+| Any MISSING | Fix before opening the PR — no exceptions |
+| Any DEAD | Fix the broken producer→consumer chain before opening the PR |
+
+Do not open the PR with unresolved MISSING or DEAD findings. There is no "I'll fix it in a follow-up" for items the design requires.
+
+### Step 3: Paste the Conformance Table into the PR Body
+
+The PR body **must** contain the `@architect-reviewer` conformance table. A PR body without it signals the gate was skipped.
+
+```markdown
+## Design Conformance
+
+| # | Requirement | Source | Status | Evidence |
+|---|---|---|---|---|
+| 1 | ... | ADR-0003, §2 | CONFORMANT | src/pipeline.py:142 |
+...
+
+Reviewed by @architect-reviewer — all requirements CONFORMANT.
+```
+
+If the repo has no design documents, write: `No design documents found — conformance review not applicable.`
+
+### Step 4: Open the PR
+
+```bash
+gh pr create --fill
+```
+
+---
+
+## Stacked PR Workflow (Vanilla Git)
+
+### Why Stacked PRs
+- Keeps PRs small (150-400 lines target, 800 hard limit).
+- Each branch = one reviewable PR, merged bottom-up.
+- Uses only vanilla Git + `gh` CLI. No external stacking tools.
+
+### Why Vanilla Git (Not stack-pr / git-branchless)
+- Preserves atomic commits (multiple commits per PR, not one fat commit).
+- No external tool dependencies or version breakage.
+- CI triggers work reliably (no force-push hash mismatches).
+- Full control over merge strategy.
+
 ### Creating a Stack
 ```bash
 # Start from fresh main
