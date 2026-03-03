@@ -83,6 +83,9 @@ gh search issues "label:bug is:open" --repo owner/repo
 
 ## Issue Discipline
 
+For full issue writing guidance — templates, removal discipline, design doc references,
+test requirements, epic sizing — load the `issue-writing` skill.
+
 ### NEVER defer work without an issue
 If a reviewer says "you could also..." or "consider adding..." and it's out of scope:
 1. Create an issue immediately: `gh issue create -t "Follow-up: ..." -b "From PR #N"`

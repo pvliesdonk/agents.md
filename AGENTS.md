@@ -193,6 +193,7 @@ Load skills on-demand when you need reference patterns for a specific domain:
 | `prompt-craft` | Designing or reviewing prompts, few-shot, output schemas |
 | `dual-model-strategy` | Schema design, prompt adaptation, fallback chains for multi-model |
 | `github-workflow` | Issue discipline, commit format, pre-PR conformance gate, gh CLI recipes |
+| `issue-writing` | Issue templates, removal discipline, design doc references, test requirements, epic sizing |
 | `stacked-prs` | Creating and managing PR stacks, parallel stacks with git worktrees, merging bottom-to-top |
 | `release-flow` | semantic-release, PyPI, Docker, GitHub Actions pipelines |
 | `cli-patterns` | typer + rich CLI design, output formatting, error UX |
@@ -216,7 +217,7 @@ Use subagents for specialized tasks:
 | `@llm-engineer` | LLM pipelines, LangChain, model config, structured output | Full write | `langchain-patterns`, `dual-model-strategy` | Track model performance, prompt effectiveness |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) | `prompt-craft`, `dual-model-strategy` | Save successful prompt templates |
 | `@security-reviewer` | Security audits, dependency checks, secrets review | Read-only (audit) | — | Record security patterns, vulnerabilities found |
-| `@github-ops` | Issues, PRs, releases, CI/CD, stacked PR management | Full write + gh CLI | `github-workflow`, `stacked-prs`, `release-flow` | Remember PR patterns, team preferences |
+| `@github-ops` | Issues, PRs, releases, CI/CD, stacked PR management | Full write + gh CLI | `github-workflow`, `issue-writing`, `stacked-prs`, `release-flow` | Remember PR patterns, team preferences |
 | `@frontend-dev` | CLI (typer/rich), web UI, user-facing interfaces | Full write | `cli-patterns` | Store UI/UX decisions, user feedback |
 | `@technical-writer` | ADRs, API docs, technical writing, changelogs | Read + ask-to-write | `documentation-patterns` | Store doc patterns, ADR history |
 | `@test-engineer` | Test strategy, pytest patterns, coverage, TDD | Read + ask-to-write | `testing-patterns` | Track flaky tests, effective patterns |

@@ -47,6 +47,7 @@ Skills are loaded only when needed, saving context tokens:
 | `prompt-craft` | Prompt scaffolds, few-shot design, dual-model adaptation |
 | `dual-model-strategy` | Schema design, fallback chains, testing, cost optimization |
 | `github-workflow` | Issue discipline, commit format, pre-PR conformance gate, gh CLI recipes |
+| `issue-writing` | Issue templates, removal discipline, design doc references, test requirements, epic sizing |
 | `stacked-prs` | Creating and managing PR stacks, parallel stacks with git worktrees, merging bottom-to-top |
 | `release-flow` | semantic-release, PyPI trusted publishing, Docker, GitHub Actions |
 | `cli-patterns` | typer + rich: commands, progress, tables, error UX, verbosity |
