@@ -273,10 +273,32 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 
 ---
 
+## Exclusions for Claude Code
+
+### deliberation skill
+
+The `skills/deliberation/SKILL.md` skill is **not synced** to `claude-skills/`.
+
+The deliberation system requires spawning heterogeneous model agents
+(Claude Opus 4.6, Gemini 3 Pro, GPT-5.2) as independent subagents that post
+to GitHub Discussions. Claude Code does not support custom multi-model
+subagent orchestration — the `/deliberate-*` commands and the deliberator
+agents have no equivalent in the Claude Code environment.
+
+**Do not add `claude-skills/deliberation/`.**
+
+### AGENTS.md → claude-agents deliberator agents
+
+The three deliberator agents (`claude-deliberator.md`, `gemini-deliberator.md`,
+`gpt-deliberator.md`) are also excluded from `claude-agents/` for the same
+reason.
+
+---
+
 ## Last Synced
 
-- **agents/**: 2026-02-16
-- **skills/**: 2026-02-16
+- **agents/**: 2026-03-03
+- **skills/**: 2026-03-03
 
 ## Testing Checklist
 

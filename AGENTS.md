@@ -82,6 +82,86 @@ Load the `dual-model-strategy` skill for detailed patterns.
 - **Conventional commits**: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 - **PR size**: Target 150-400 lines. Hard limit 800 lines. Split proactively.
 
+### Issue Writing Discipline
+
+- **Separate addition from removal.** NEVER bundle "add X" and "remove Y" in the same issue unless the removal is trivially small (< 10 lines). Removal is its own deliverable. Bundling guarantees the removal gets deferred.
+- **Removal issues MUST include a Verification section** with shell commands that mechanically confirm the removal happened (grep/find commands that return 0 matches). These are acceptance criteria. Run them before closing.
+- **Removal issues MUST list test updates as a deliverable.** Tests that exercised the removed code must be rewritten to assert the new expected state — not just deleted or left passing via a compat shim. Example: if a stage no longer produces a certain output, update the test to assert that output is absent, don't just remove the assertion.
+- **Epics MUST NOT exceed 10 issues.** Larger efforts split into sequential milestones of ≤ 10 issues, each independently valuable. Between milestones: stop and audit — did the previous milestone achieve its goals? NEVER execute more than one milestone per session without explicit user approval.
+
+## Refactoring & Removal Discipline (CRITICAL)
+
+**You have a training bias toward additive changes. These rules exist to counteract it.**
+
+The pattern: an issue says "remove X." You add a new Y alongside X, build a compat shim so tests still pass, close the issue. X is still there. This is a failure, not progress.
+
+### Removal Is the Deliverable
+
+When an issue says "remove," "delete," "replace," or "migrate away from" — the old code MUST be gone from the codebase when the PR merges. Not wrapped, not deprecated, not adapted — **deleted.**
+
+- If removing code breaks tests, **fix the tests.** Broken tests are the expected cost of removal, not a signal to add a compatibility layer.
+- If removing code breaks downstream consumers within the same repo, **fix the consumers.** That is part of the removal issue's scope.
+- If the blast radius is too large for one PR, split the removal into multiple PRs — but every PR must remove something. No PR should only add a shim.
+- Removal issues MUST include **test updates** as an explicit deliverable: tests that exercised the removed code must be updated to verify the *new* expected state (e.g., "stage X produces 0 items" not just "stage X doesn't crash"). This turns tests into a positive signal that removal happened.
+
+### NEVER Build Unwanted Backward Compatibility
+
+Backward-compatibility layers (fallback functions, "check new then fall back to old" patterns, adapter shims) are **only** acceptable when:
+1. External consumers exist that you cannot modify in the same PR
+2. The user explicitly requests a gradual migration with a deprecation period
+
+For internal refactoring within a single codebase: **replace directly.** Every compat shim you add is technical debt that will itself need a removal issue later — you are making the problem worse.
+
+- Bad: `get_items()` that checks the new field first, falls back to the old field
+- Good: `get_items()` that uses the new field. Delete code that writes the old field.
+- Bad: `_adapt_old_format()` that reconstructs old objects from new data
+- Good: Delete old format entirely. Update all consumers to use the new format directly.
+
+### Tests Pass ≠ Issue Complete
+
+Passing tests is necessary but NOT sufficient for closing an issue. Before closing:
+
+1. **Run the issue's verification commands** (if the issue has a Verification section)
+2. **Verify removals are actually gone** — grep for the function/class/edge type that was supposed to be deleted
+3. **Verify behavior changed** — if the issue says "stage X must not produce Y," confirm X no longer produces Y. Don't just check that another stage also produces Y.
+4. **Re-read the issue description** — does the PR deliver EVERY listed requirement? Not just the easy ones?
+
+The trap: additive code never breaks existing tests. You can add `new_compute()` alongside `old_compute()` and every test passes. But the issue said "remove old_compute" — and it's still there. Tests passing means nothing here.
+
+### Removal Is Not Dangerous
+
+Counteract the training bias. When an issue says "remove," the discomfort of breaking tests is the *cost* of the refactoring, not a signal to stop. The real danger is leaving dead code that makes the system harder to understand and maintain.
+
+### Removal Before Addition (Preferred Order)
+
+When a milestone includes both "add new pattern" and "remove old pattern" issues, prefer executing removal first when possible. Delete the old code → tests break → add the new code → tests pass. This inverts the incentive: you cannot close the removal issue by adding code alongside.
+
+## Design Conformance Bias (CRITICAL)
+
+**You have a training bias toward "it runs = it's correct." These rules exist to counteract it.**
+
+The pattern: code runs, tests pass, you report success. But the implementation is missing entire features specified in the design documents. Test fixtures hand-construct ideal state that the real pipeline never produces. "Tests pass" proves nothing about design conformance.
+
+### Architect-Reviewer Gate
+
+For projects with authoritative design documents, every PR that implements specification-driven functionality MUST include an `architect-reviewer` sign-off. See project-level CLAUDE.md for the specific process.
+
+The `architect-reviewer` agent (`.claude/agents/architect-reviewer.md`) is specifically designed to:
+- Start from the design document, never from the code
+- Ignore test results entirely
+- Report CONFORMANT / PARTIAL / MISSING / DEAD per requirement
+- Flag DEAD code (schema exists but LLM never populates; consumer exists but never receives input)
+- Compare test fixtures against real pipeline output
+
+### "It Runs" Is Not Evidence
+
+When you finish implementing a feature and want to report success, ask yourself:
+- Did you verify the **output** matches the spec, or just that it didn't crash?
+- Did you check that the data produced is **consumed** downstream, or just that it's stored?
+- Did you compare against the **design document**, or just against the test expectations?
+
+If you only checked that it runs, you have not verified anything. Run the architect-reviewer.
+
 ## Communication
 
 - State uncertainty clearly. If you're guessing, say so.
@@ -131,6 +211,7 @@ Use subagents for specialized tasks:
 | Agent | Use For | Access | Related Skills | Memory Usage |
 |-------|---------|--------|----------------|--------------|
 | `@architect` | Design decisions, refactoring strategy, dependency analysis | Read + ask-to-write | `python-patterns` | Store architectural decisions with rationale |
+| `@architect-reviewer` | Adversarial design conformance review — verifies implementation against design docs | Read-only (audit) | — | Record gaps found, fixture divergences |
 | `@llm-engineer` | LLM pipelines, LangChain, model config, structured output | Full write | `langchain-patterns`, `dual-model-strategy` | Track model performance, prompt effectiveness |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) | `prompt-craft`, `dual-model-strategy` | Save successful prompt templates |
 | `@security-reviewer` | Security audits, dependency checks, secrets review | Read-only (audit) | — | Record security patterns, vulnerabilities found |

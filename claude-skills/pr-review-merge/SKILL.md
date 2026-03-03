@@ -7,17 +7,18 @@ description: Resolving PR review comments and merging stacked PRs — gathering 
 
 **Execute this workflow immediately and completely.** Do not ask the user whether
 to proceed — loading this skill is authorization to act. The goal is: gather all
-feedback, address every finding, push fixes, hand off the merge to `@github-ops`.
+feedback, address every finding, push fixes, then merge.
 
 ## Step 1: Gather ALL Feedback
 
-Pull every feedback source before touching any code:
+Pull every feedback source before touching any code. Claude Code has access to
+GitHub MCP tools — use them in parallel:
 
 ```
-mcp_github_pull_request_read method: get_review_comments  # threaded inline comments
-mcp_github_pull_request_read method: get_reviews           # review decisions + body
-mcp_github_pull_request_read method: get_comments          # issue-style PR comments
-mcp_github_pull_request_read method: get_status            # CI/check status
+mcp__github__pull_request_read (get_review_comments)  # threaded inline comments
+mcp__github__pull_request_read (get_reviews)           # review decisions + body
+mcp__github__pull_request_read (get_comments)          # issue-style PR comments
+mcp__github__pull_request_read (get_status)            # CI/check status
 ```
 
 **Both inline comments AND issue-style comments must be fetched.** They are
@@ -96,9 +97,6 @@ gh pr comment <number> --body "Addressed all review comments:
 - Created #N to track [deferred concern]"
 ```
 
-If the project's CI/CD automatically triggers re-review, that is sufficient.
-Do not wait for a new approval round — proceed immediately to `@github-ops`.
-
 ## Step 7: Hand Off to @github-ops
 
 Invoke `@github-ops` to handle all git mechanics:
@@ -114,7 +112,7 @@ squash-merges, branch deletion, post-merge memory storage.
 
 ## Step 8: Store Memories
 
-Call `mcp_mem0_add_memory` for non-obvious findings from this review cycle:
+Use mem0 (if configured) to record non-obvious patterns from this review cycle:
 
 ```
 "PR review pattern in {repo}: {reviewer} flags {pattern}. Prefer {approach}. (PR #{N})"
@@ -126,9 +124,9 @@ Do not store routine style fixes. Store patterns that will save time in future P
 
 ## Common Pitfalls
 
-- **Reading only review bodies, not inline comments** — always call `get_review_comments`
+- **Reading only review bodies, not inline comments** — always fetch `get_review_comments`
   separately; they are a different API endpoint from review decisions
-- **Reading only inline comments, not issue-style PR comments** — always call `get_comments`
+- **Reading only inline comments, not issue-style PR comments** — always fetch `get_comments`
   separately; reviewers use both locations for blocking feedback
 - **Marking threads resolved without acting** — resolved ≠ addressed
 - **Merging with CHANGES_REQUESTED outstanding** — always check review state explicitly
