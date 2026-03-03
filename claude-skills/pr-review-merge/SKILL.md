@@ -114,7 +114,42 @@ git push
 **Never amend** — always new commits. Squash-merging will clean history at
 merge time. Amending rewrites history reviewers already read.
 
-## Step 6: Leave Summary Comment
+## Step 6: Reply to Every Comment — No Exceptions
+
+After pushing, reply individually to every piece of feedback from the finding
+list. Every comment gets exactly one of these replies:
+
+| Outcome | Reply format |
+|---------|-------------|
+| Fixed | `"Fixed in <commit sha>. [One sentence explaining what changed and why.]"` |
+| Deferred | `"Good catch — out of scope here. Tracked in #N."` |
+| Intentionally not changed | `"Intentionally kept as-is: [reason]. Happy to discuss if you disagree."` |
+
+**PR comments** (issue-style) — reply with `gh pr comment`:
+```bash
+gh pr comment <pr-number> --body "Fixed in abc1234. Extracted the validation
+logic into a separate validator class as suggested."
+```
+
+**Inline review comments** — reply to the specific thread, then resolve it:
+```bash
+# Reply to a specific review comment thread
+gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id}/replies \
+  --method POST --field body="Fixed in abc1234. Renamed for clarity."
+
+# Resolve the thread after replying
+gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment_id} \
+  --method PATCH --field "in_reply_to_id={comment_id}"
+```
+
+**Never resolve a thread without replying first.** Resolution without a reply
+is invisible — it looks like the comment was acknowledged but leaves no record
+of what was done or why.
+
+Work through the finding list item by item. When every comment has a reply,
+proceed to the summary.
+
+## Step 6b: Leave Summary Comment
 
 ```bash
 gh pr comment <number> --body "Addressed all review comments:
@@ -123,7 +158,10 @@ gh pr comment <number> --body "Addressed all review comments:
 - Created #N to track [deferred concern]"
 ```
 
-## Step 6a: Pre-Merge Conformance Gate (Mandatory)
+The summary is a high-level roll-up. Individual replies (Step 6) handle the
+per-comment accountability. Both are required.
+
+## Step 6c: Pre-Merge Conformance Gate (Mandatory)
 
 Before handing off to `@github-ops`, run `@architect-reviewer` on the **final state** of the branch:
 
@@ -136,11 +174,11 @@ Invoke `@architect-reviewer` with:
 
 | Finding | Action |
 |---------|--------|
-| All CONFORMANT | Proceed to Step 6b |
+| All CONFORMANT | Proceed to Step 6d |
 | Any PARTIAL | Fix, push, return to Step 5 |
 | Any MISSING / DEAD | Fix, push, return to Step 5 — no exceptions |
 
-## Step 6b: Bot Review Loop
+## Step 6d: Bot Review Loop
 
 This project uses automated reviewers. Trigger both before merging:
 
@@ -156,7 +194,7 @@ Then wait for both bots to complete their reviews. Evaluate:
 | Outcome | Action |
 |---------|--------|
 | Both LGTM or COMMENTED only | Proceed to Step 7 |
-| Either has CHANGES_REQUESTED | Address all findings (Step 3–5), push, Claude re-reviews automatically, post `/gemini review` again, repeat from Step 6b |
+| Either has CHANGES_REQUESTED | Address all findings (Step 3–5), reply to each comment (Step 6), push, Claude re-reviews automatically, post `/gemini review` again, repeat from Step 6d |
 
 **LGTM from both bots is the merge gate.** Do not hand off to `@github-ops` until this is satisfied.
 
