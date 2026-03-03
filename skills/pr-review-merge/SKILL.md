@@ -11,21 +11,48 @@ feedback, address every finding, push fixes, hand off the merge to `@github-ops`
 
 ## Step 1: Gather ALL Feedback
 
-Pull every feedback source before touching any code:
+Pull every feedback source before touching any code. **All four calls are
+mandatory** — skipping any of them is incomplete feedback gathering:
 
 ```
-mcp_github_pull_request_read method: get_review_comments  # threaded inline comments
+mcp_github_pull_request_read method: get_comments          # issue-style PR comments ← START HERE
 mcp_github_pull_request_read method: get_reviews           # review decisions + body
-mcp_github_pull_request_read method: get_comments          # issue-style PR comments
+mcp_github_pull_request_read method: get_review_comments   # threaded inline comments
 mcp_github_pull_request_read method: get_status            # CI/check status
 ```
 
-**Both inline comments AND issue-style comments must be fetched.** They are
-separate API endpoints and contain different feedback. A reviewer may leave
-blocking concerns in either location.
+**`get_comments` (issue-style PR comments) is listed first because it is the
+most commonly skipped and often contains the most important feedback.**
+Architectural concerns, conceptual objections, and design questions are
+typically left as PR comments, not inline review comments. Inline comments
+address local code issues. PR comments address the PR as a whole.
 
-Build a full finding list before acting on any of them. A later comment may
-contradict or supersede an earlier one.
+These are separate API endpoints. Calling one does not return the other.
+A PR with zero inline review comments may still have critical PR comments.
+
+### Mandatory: Produce a Full Finding List
+
+Before acting on anything, write out every piece of feedback found across all
+four sources. Format:
+
+```
+PR comments (get_comments):
+- [author, timestamp]: "[quote or summary]"
+- ...
+
+Review decisions (get_reviews):
+- [author]: APPROVED / CHANGES_REQUESTED / COMMENTED
+  "[review body if present]"
+
+Inline comments (get_review_comments):
+- [author, file:line]: "[quote or summary]"
+- ...
+
+CI status: passing / failing / pending
+```
+
+A later comment may contradict or supersede an earlier one — read everything
+before acting on anything.
 
 ## Step 2: Triage Review States
 
@@ -160,10 +187,14 @@ Do not store routine style fixes. Store patterns that will save time in future P
 
 ## Common Pitfalls
 
-- **Reading only review bodies, not inline comments** — always call `get_review_comments`
-  separately; they are a different API endpoint from review decisions
-- **Reading only inline comments, not issue-style PR comments** — always call `get_comments`
-  separately; reviewers use both locations for blocking feedback
+- **Skipping `get_comments`** — the most common failure. PR comments contain
+  architectural and conceptual feedback that inline comments never capture.
+  A PR can have zero inline comments and still have blocking concerns in `get_comments`.
+- **Treating `get_reviews` as sufficient** — review decisions (APPROVED etc.) are
+  separate from review body text, which is separate from inline comments, which is
+  separate from PR comments. Four calls, not one.
+- **Producing no finding list before acting** — without writing out all feedback first,
+  early findings get acted on before later ones are read, causing contradictions to be missed.
 - **Marking threads resolved without acting** — resolved ≠ addressed
 - **Merging with CHANGES_REQUESTED outstanding** — always check review state explicitly
 - **Amending commits** — breaks reviewers' diff context; always new commits
