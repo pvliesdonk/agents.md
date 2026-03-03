@@ -46,7 +46,8 @@ Skills are loaded only when needed, saving context tokens:
 | `langchain-patterns` | LCEL chains, structured output, LiteLLM, Ollama, LangGraph |
 | `prompt-craft` | Prompt scaffolds, few-shot design, dual-model adaptation |
 | `dual-model-strategy` | Schema design, fallback chains, testing, cost optimization |
-| `github-workflow` | Stacked PRs (vanilla Git branches), gh CLI, issue discipline |
+| `github-workflow` | Issue discipline, commit format, pre-PR conformance gate, gh CLI recipes |
+| `stacked-prs` | Creating and managing PR stacks, parallel stacks with git worktrees, merging bottom-to-top |
 | `release-flow` | semantic-release, PyPI trusted publishing, Docker, GitHub Actions |
 | `cli-patterns` | typer + rich: commands, progress, tables, error UX, verbosity |
 | `deliberation` | Multi-agent debate protocol, comment structure, convergence rules |
