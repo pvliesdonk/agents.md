@@ -10,11 +10,24 @@ description: Stacked PR workflow with vanilla Git — creating and managing PR s
 - Uses only vanilla Git + `gh` CLI — no external stacking tools.
 - Preserves atomic commits; squash-merge cleans history at merge time.
 
+## Before Starting Any New Stack (Mandatory)
+
+Always sync with origin before creating branches for a new issue or stack:
+
+```bash
+git fetch origin
+git checkout main
+git reset --hard origin/main
+```
+
+**Never branch from a stale local main.** Work started from an outdated base
+produces unnecessary merge conflicts and may duplicate work already merged.
+This applies to every new stack, including parallel stacks in new worktrees.
+
 ## Single Stack: Creating and Working
 
 ```bash
-# Start from fresh main
-git fetch origin main
+# Start from fresh main (after the mandatory sync above)
 git checkout -b feat/X-models origin/main
 
 # Work with multiple atomic commits per branch
@@ -83,11 +96,15 @@ avoids stashing, branch-switching overhead, and accidental cross-stack edits.
 ### Setup: One Worktree per Stack
 
 ```bash
+# Always sync main first
+git fetch origin
+git checkout main && git reset --hard origin/main
+
 # Main worktree: feat/X stack (already checked out)
 # ~/project/  →  feat/X-models, feat/X-api
 
-# Add a second worktree for feat/Y stack
-git worktree add ../project-feat-Y feat/Y-schema
+# Add a second worktree for feat/Y stack — branches from fresh main
+git worktree add ../project-feat-Y -b feat/Y-schema origin/main
 # ~/project-feat-Y/  →  feat/Y-schema (separate working directory, same repo)
 
 # Add a third for feat/Z
