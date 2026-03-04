@@ -95,10 +95,15 @@ A complete chain requires: schema exists AND writer populates it AND reader cons
 
 ### Step 4: Check Test Fixtures vs Reality
 
-If test fixtures exist, compare them against what the real pipeline produces:
+**In a codebase where code and tests were written by the same LLM, fixtures are suspect by default.** The LLM writes tests for the scenarios it imagined, not for the scenarios that will occur in production. Fixtures and code share the same blind spots.
+
+Compare fixtures against what the real pipeline produces — and against what the design requires:
 - Do fixtures create data structures that the real pipeline never creates?
 - Do fixtures skip steps that the real pipeline depends on?
-- Test fixtures that construct "ideal" graph state can mask missing implementation.
+- Do fixtures only exercise a subset of the real input space? (e.g., single-path graphs when multi-path is the real case)
+- Test fixtures that construct "ideal" state can mask missing implementation.
+
+Ask: **if you ran the real pipeline on real inputs, would the test scenarios ever occur?** If not, the tests are not testing the real system.
 
 ## Output Format
 

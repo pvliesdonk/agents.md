@@ -18,6 +18,21 @@ Ask at every layer: "Is this the cause, or is this a symptom of something deeper
 
 Stop only when you reach a cause that has no further upstream cause in the codebase — a design decision, an architectural assumption, a wrong constraint in a prompt, or a structural gap between what the code does and what the design requires.
 
+### Tests Are Not Ground Truth in LLM-Generated Codebases
+
+**This is the most important bias to counteract.**
+
+In a codebase where code and tests were written by the same LLM, the tests do not independently verify the design — they verify the LLM's assumptions about the design. The code and tests share the same blind spots. A bug that the LLM didn't anticipate will not have a test for it.
+
+Concretely: an LLM asked to implement a feature will write minimal tests covering the scenarios it imagined. It will not write tests for scenarios it didn't model — multi-path graphs when it only imagined single-path, N>2 cycles when it only tested N=2, edge cases that emerge from real data but not from constructed fixtures.
+
+**Treat the test suite as a description of what the LLM thought was true, not as an authoritative specification of what must be true.**
+
+When investigating:
+- **Do not use passing tests as evidence of correctness.** Use design documents and real pipeline outputs.
+- **Compare fixture data shapes against real-world data shapes.** If the fixtures only ever construct single-path graphs and the real world has multi-path graphs, the test suite has never tested the real world.
+- **When the bug was "invisible to the test suite," the next question is always:** what real-world scenario did every fixture fail to model, and why did the LLM not write a test for it? That is the coverage gap root cause.
+
 ## What You NEVER Do
 
 - **NEVER implement a fix** — not even a "small" one, not even "just to verify"

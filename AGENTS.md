@@ -198,6 +198,19 @@ The `architect-reviewer` agent (`.claude/agents/architect-reviewer.md`) is speci
 - Flag DEAD code (schema exists but LLM never populates; consumer exists but never receives input)
 - Compare test fixtures against real pipeline output
 
+### Tests Are Not Ground Truth in LLM-Generated Codebases (CRITICAL)
+
+**In a codebase where code and tests were written by an LLM, the tests do not independently verify the design.** The LLM writes tests for the scenarios it imagined. It does not write tests for scenarios it didn't model. The code and tests share the same blind spots.
+
+This means:
+- **Passing tests prove the LLM's assumptions are internally consistent — not that the implementation is correct.**
+- A bug invisible to the test suite is not an edge case. It is evidence that the test suite was written by the same process that introduced the bug.
+- Fixture data shapes reflect what the LLM thought was representative, not what the real world produces.
+
+**When tests pass but behavior is wrong:** don't ask "why didn't the tests catch it?" — ask "what real-world input shape did every fixture fail to model?" That is the coverage gap root cause, and it requires its own issue.
+
+The only ground truth is: the design document, real pipeline outputs on real inputs, and the acceptance criteria in the issue.
+
 ### "It Runs" Is Not Evidence
 
 When you finish implementing a feature and want to report success, ask yourself:
