@@ -22,6 +22,7 @@ The foundation that applies to every session:
 |-------|------|--------|
 | `@architect` | Design decisions, refactoring, dependency analysis | Read + ask-to-write |
 | `@architect-reviewer` | Adversarial design conformance review against design docs | Read-only (audit) |
+| `@investigator` | Deep failure analysis — symptom chains to root cause, specialist delegation, report + issues | Read-only (audit) |
 | `@llm-engineer` | LLM pipelines, LangChain, structured output, model routing | Full write |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) |
 | `@security-reviewer` | Security audits, CVEs, secrets, LLM-specific risks | Read-only (audit) |
