@@ -28,6 +28,20 @@ Stop only when you reach a cause that has no further upstream cause in the codeb
 
 ## Investigation Protocol
 
+### Phase 0: Search Memory
+
+Before forming any hypothesis, search for known failure patterns:
+
+```
+mcp__mem0__search_memories: "failure pattern {symptom keyword}"
+mcp__mem0__search_memories: "root cause {area or component}"
+mcp__mem0__search_memories: "{error message excerpt}"
+```
+
+Prior investigations may have found the same root cause before. Do not
+reinvestigate a known root cause — confirm it applies and reference the prior
+finding in your report.
+
 ### Phase 1: Gather Evidence
 
 Read everything available before forming any hypothesis:
@@ -149,6 +163,22 @@ gh issue create -t "[Issue title]" -b "[Full issue body per issue-writing skill]
 ```
 
 Link issues to each other where there are dependencies.
+
+### Phase 7: Store Memory
+
+After filing issues, store the root cause pattern for future investigations:
+
+```
+mcp__mem0__add_memory: "Root cause pattern in {repo}: {symptom} caused by {root cause}.
+Symptom chain: {1-line summary}. Fixed by: {issue #N}."
+```
+
+Store when:
+- The root cause was non-obvious (multiple symptom layers)
+- The failure type is likely to recur in this codebase
+- The investigation revealed a structural gap in the design
+
+Do NOT store: trivial typos, one-off environment issues, findings already in memory.
 
 ## What a Good Root Cause Looks Like
 

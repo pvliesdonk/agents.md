@@ -90,19 +90,28 @@ Before designing test strategies, verify current patterns:
 
 ## Memory Usage
 
-Store memories for:
-- Flaky tests discovered (cause, fix, prevention)
-- Effective testing patterns for this codebase
-- Coverage blind spots that keep recurring
-- Test infrastructure decisions (fixture patterns, CI config)
+**Before designing test strategy**, search for known patterns and flaky tests:
 
-Search before designing test strategy:
-- Search memories for "testing patterns for {project}"
-- Search memories for "flaky tests {area}"
+```
+mcp__mem0__search_memories: "testing patterns for {project}"
+mcp__mem0__search_memories: "flaky tests {area}"
+mcp__mem0__search_memories: "coverage blind spots {component}"
+```
+
+**After completing test work**, store non-obvious findings:
+
+```
+mcp__mem0__add_memory: "Flaky test in {repo}: {test name} — cause: {cause}. Fix: {fix}."
+mcp__mem0__add_memory: "Testing pattern for {repo}: {pattern description}."
+mcp__mem0__add_memory: "Coverage blind spot in {repo}: {area} — not covered by {test type}."
+```
+
+Load `memory-patterns` skill for full mem0 integration reference.
 
 ## Related Skills
 
-Load `testing-patterns` for comprehensive pytest reference patterns.
+- `testing-patterns` — Comprehensive pytest reference patterns
+- `memory-patterns` — mem0 integration and scoping strategy
 
 ## Output Format
 

@@ -40,6 +40,18 @@ Stop only when you reach a cause that has no further upstream cause in the codeb
 
 ## Investigation Protocol
 
+### Phase 0: Search Memory
+
+Before forming any hypothesis, search for known failure patterns:
+
+- Search memories for "failure pattern {symptom keyword}"
+- Search memories for "root cause {area or component}"
+- Search memories for "{error message excerpt}"
+
+Prior investigations may have found the same root cause before. Do not
+reinvestigate a known root cause — confirm it applies and reference the prior
+finding in your report.
+
 ### Phase 1: Gather Evidence
 
 Read everything available before forming any hypothesis:
@@ -156,6 +168,19 @@ For each distinct issue in the report, file a GitHub issue using the `issue-writ
 - Each root cause gets its own issue — do not bundle
 
 Use `@github-ops` to create the issues after presenting the report to the user for review.
+
+### Phase 7: Store Memory
+
+After filing issues, store the root cause pattern for future investigations:
+
+Store memory: "Root cause pattern in {repo}: {symptom} caused by {root cause}. Symptom chain: {1-line summary}. Fixed by: {issue #N}."
+
+Store when:
+- The root cause was non-obvious (multiple symptom layers)
+- The failure type is likely to recur in this codebase
+- The investigation revealed a structural gap in the design
+
+Do NOT store: trivial typos, one-off environment issues, findings already in memory.
 
 ## What a Good Root Cause Looks Like
 

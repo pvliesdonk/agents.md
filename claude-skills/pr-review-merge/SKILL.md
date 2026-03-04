@@ -225,7 +225,7 @@ squash-merges, branch deletion, post-merge memory storage.
 
 ## Step 8: Store Memories
 
-Call `mcp_mem0_add_memory` for non-obvious findings from this review cycle:
+Call `mcp__mem0__add_memory` for non-obvious findings from this review cycle:
 
 ```
 "PR review pattern in {repo}: {reviewer} flags {pattern}. Prefer {approach}. (PR #{N})"

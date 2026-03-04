@@ -95,6 +95,21 @@ If test fixtures exist, compare them against what the real pipeline produces:
 [List cases where test fixtures create state the pipeline doesn't]
 ```
 
+## Memory Usage
+
+**Before starting a review**, search for prior conformance gaps in this codebase:
+- Search memories for "conformance gap {repo or component}"
+- Search memories for "DEAD code {area}"
+- Search memories for "fixture divergence {repo}"
+
+Prior reviews may have flagged the same gap. Reference it — if the same MISSING requirement appears again, that is evidence of a systemic enforcement problem.
+
+**After completing a review**, store non-obvious gaps found:
+
+Store memory: "Conformance gap in {repo}: {requirement} is MISSING/DEAD. Design doc: {doc name}, section: {N}. Reported in PR #{N} / issue #{N}."
+
+Store MISSING and DEAD findings. Do NOT store CONFORMANT requirements (noise).
+
 ## Remember
 
 Your value is in finding what's NOT there. Anyone can verify that existing code runs. Only you verify that all required code exists.

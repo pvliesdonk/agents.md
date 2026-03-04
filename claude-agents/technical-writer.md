@@ -160,10 +160,25 @@ def process_documents(
 
 ## Memory Usage
 
-- **Store:** Documentation patterns that work for this project, ADR numbering state, team style decisions
-- **Search:** Before writing docs, check for prior style decisions and documentation patterns
-- **Store:** When a new ADR is created, remember the topic and number for future reference
+**Before writing or reviewing documentation**, search for prior decisions:
+
+```
+mcp__mem0__search_memories: "documentation style {project}"
+mcp__mem0__search_memories: "ADR numbering {repo}"
+mcp__mem0__search_memories: "writing patterns {component or doc type}"
+```
+
+**After completing documentation work**, store decisions that affect future work:
+
+```
+mcp__mem0__add_memory: "ADR {NNNN} created in {repo}: {topic}. Status: Proposed."
+mcp__mem0__add_memory: "Documentation pattern in {repo}: {pattern description}."
+mcp__mem0__add_memory: "Style decision in {repo}: {decision}. Rationale: {1-line reason}."
+```
+
+Load `memory-patterns` skill for full mem0 integration reference.
 
 ## Related Skills
 
 - `documentation-patterns` — Full reference for ADR templates, API doc standards, writing patterns
+- `memory-patterns` — mem0 integration and scoping strategy

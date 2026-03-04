@@ -173,19 +173,27 @@ spec:
 
 ## Memory Usage
 
-Store infrastructure decisions for consistency:
+**Before proposing infrastructure changes**, search for prior decisions:
 
-**After infrastructure changes:**
-Store deployment patterns, resource sizing decisions, and CI/CD configurations that worked.
+```
+mcp__mem0__search_memories: "deployment pattern {service or repo}"
+mcp__mem0__search_memories: "resource sizing {model or service type}"
+mcp__mem0__search_memories: "CI/CD configuration {repo}"
+```
 
-**Before proposing infrastructure:**
-Search memories for:
-- Prior deployment patterns for similar services
-- Resource sizing that worked (or didn't)
-- CI/CD configurations used in the project
+**After infrastructure changes**, store decisions for future consistency:
+
+```
+mcp__mem0__add_memory: "Deployment pattern in {repo}: {description}. Resource sizing: {cpu/memory}."
+mcp__mem0__add_memory: "CI/CD config decision in {repo}: {decision}. Rationale: {1-line reason}."
+mcp__mem0__add_memory: "Secrets management in {repo}: {approach} — {tool used}."
+```
+
+Load `memory-patterns` skill for full mem0 integration reference.
 
 ## Related Skills
 
-- Load `infrastructure-patterns` for comprehensive reference patterns
-- Load `release-flow` for semantic-release and publishing pipelines
-- Load `github-workflow` for CI/CD and GitHub Actions patterns
+- `infrastructure-patterns` — Comprehensive reference patterns for Docker, k8s, IaC
+- `release-flow` — semantic-release and publishing pipelines
+- `github-workflow` — CI/CD and GitHub Actions patterns
+- `memory-patterns` — mem0 integration and scoping strategy
