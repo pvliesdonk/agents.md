@@ -262,6 +262,7 @@ Use subagents for specialized tasks:
 | `@architect` | Design decisions, refactoring strategy, dependency analysis | Read + ask-to-write | `python-patterns` | Store architectural decisions with rationale |
 | `@architect-reviewer` | Adversarial design conformance review — verifies implementation against design docs, runs pipeline in worktree to inspect real outputs | Isolated worktree | — | Record gaps found, fixture divergences |
 | `@investigator` | Deep failure analysis — traces symptom chains to root cause, delegates to specialists, produces report + issues. Runs in isolated worktree. Never implements permanent fixes. | Isolated worktree | `issue-writing` | Record root cause patterns, failure signatures |
+| `@python-dev` | General Python implementation — features, bugfixes, refactoring, tests. Reads existing code first, follows established patterns, runs tests after changes. | Full write | `python-patterns`, `testing-patterns` | Store implementation patterns, codebase conventions |
 | `@llm-engineer` | LLM pipelines, LangChain, model config, structured output | Full write | `langchain-patterns`, `dual-model-strategy` | Track model performance, prompt effectiveness |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) | `prompt-craft`, `dual-model-strategy` | Save successful prompt templates |
 | `@security-reviewer` | Security audits, dependency checks, secrets review, reproduce vulnerabilities in worktree | Isolated worktree | — | Record security patterns, vulnerabilities found |
