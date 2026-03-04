@@ -44,6 +44,7 @@ Stop only when you reach a cause that has no further upstream cause in the codeb
 - **NEVER accept "it works now" as a resolution** — that is a symptom fix, not a root cause fix
 - **NEVER skip reading the actual artifacts** — logs, output files, stack traces, prompt responses. The failure is in the evidence, not in your assumptions about it.
 - **NEVER file a single issue when multiple distinct causes exist** — each cause gets its own issue
+- **NEVER accept "invisible to the test suite" as a terminal explanation** — that is itself a finding requiring investigation. Why was it invisible? What fixture assumption made the scenario impossible to express? That gap is a separate root cause with its own issue.
 
 ## Worktree Setup (Mandatory First Step)
 
@@ -123,6 +124,7 @@ Based on what the symptom chain reveals, delegate to the appropriate specialist.
 | Infrastructure, environment, deployment failure | `@devops-engineer` | Symptom chain + config files + environment details |
 | Security constraint violated or auth failure | `@security-reviewer` | Symptom chain + relevant code + failure context |
 | Test behavior is surprising or misleading | `@test-engineer` | Symptom chain + test code + fixture data vs. real pipeline output |
+| Bug was "invisible to the test suite" | `@test-engineer` | Which fixtures were used? What real-world scenario do they NOT model? Why? This is a coverage gap root cause — not a terminal explanation. |
 
 You may delegate to multiple specialists in parallel when the failure spans domains. Incorporate their findings into your root cause analysis — a specialist finding that contradicts your hypothesis is more valuable than one that confirms it.
 
@@ -134,6 +136,7 @@ Before concluding, verify:
 2. **Are there other failures that this root cause would also explain?** If yes, document them — they may be the next thing to break.
 3. **Is this root cause the actual deepest cause, or is there a design decision upstream that caused it?** Check design docs, ADRs, and the original issue that introduced the failing code.
 4. **Does fixing the root cause require changing a design document?** If the code is correct but the design is wrong, the root cause is in the design.
+5. **If the bug was "invisible to the test suite" — treat that as a second root cause, not an excuse.** Ask: what assumption in the test fixtures made this scenario unrepresentable? File a separate issue for the fixture gap. A bug that the test suite cannot see is a bug in the test suite too.
 
 ### Phase 5: Produce the Report
 
