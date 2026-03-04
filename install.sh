@@ -17,7 +17,7 @@ case "$TARGET" in
     DEST="${HOME}/.claude"
     AGENTS_SRC="claude-agents"
     SKILLS_SRC="claude-skills"
-    CONFIG_FILE="AGENTS.md"
+    CONFIG_FILE="CLAUDE.md"
     RESTART_MSG="Restart Claude Code to pick up changes."
     ;;
   both)
