@@ -136,6 +136,51 @@ Counteract the training bias. When an issue says "remove," the discomfort of bre
 
 When a milestone includes both "add new pattern" and "remove old pattern" issues, prefer executing removal first when possible. Delete the old code → tests break → add the new code → tests pass. This inverts the incentive: you cannot close the removal issue by adding code alongside.
 
+## Delegation Discipline (CRITICAL)
+
+**You have a training bias toward paraphrasing issues when delegating. This bias causes information loss that leads to wrong implementations.**
+
+The pattern: an issue is filed with precise acceptance criteria. You read it, form a mental model, then write a subagent prompt describing your mental model — not the issue. The subagent implements the mental model. The mental model was subtly wrong. The implementation passes tests but misses the structural detail that mattered. The issue is closed. The bug remains.
+
+### The Issue IS the Delegation Prompt
+
+**When delegating implementation to a subagent, pass the issue body verbatim. Do not paraphrase, summarize, or "translate" it.**
+
+```
+@llm-engineer Implement this issue:
+
+[paste full `gh issue view <N>` output — title, body, acceptance criteria]
+[paste full `gh issue view <N> --comments` output — all comments]
+
+Do not interpret. Do not simplify. Every word in the acceptance criteria is
+load-bearing. Decisions made in comments (e.g. "use Option 1") are part of
+the spec.
+```
+
+**Always include comments.** Design decisions, option selections, and structural clarifications frequently live in the comment thread, not the original body. An implementer who only reads the body misses half the issue.
+
+If you feel the need to explain the issue in your own words, that is a signal the issue is underspecified — stop and improve the issue, don't paper over it with a verbal explanation.
+
+### Acceptance Criteria Must Be Structural
+
+Behavioral criteria ("make X consistent with Y") are not enough for structural fixes. Every acceptance criterion that involves aligning two implementations must state:
+
+- **Which files and functions** to compare
+- **Which specific structural property** must match (loop order, DAG construction strategy, edge interleaving)
+- **How to verify** the property is identical — diff the critical code paths, not just run tests
+
+**Weak (behavioral):** "make `detect_cycle` consistent with `simulate_sequence`"
+**Strong (structural):** "`detect_cycle` must build the base DAG using the same pre-built-full-graph approach as `simulate_sequence` lines 42-67 — verify by diffing the DAG construction block before the loop in each function"
+
+### Tests Pass ≠ Implementation Correct
+
+When an implementation subagent reports "tests pass," verify:
+1. **Read the acceptance criteria again** — does the implementation satisfy each one literally?
+2. **Diff the critical code paths** if the issue required aligning two implementations
+3. **Don't accept the subagent's summary** — read the changed code yourself
+
+A subagent that writes code satisfying their interpretation of the issue is not the same as code satisfying the issue's acceptance criteria.
+
 ## Design Conformance Bias (CRITICAL)
 
 **You have a training bias toward "it runs = it's correct." These rules exist to counteract it.**

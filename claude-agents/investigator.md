@@ -166,6 +166,11 @@ Reference specific evidence. Reference design docs if relevant.]
 | 1 | [Concise issue title] | Critical / High / Medium / Low | @agent or skill |
 | 2 | ... | | |
 
+**Each issue you file will be passed verbatim to an implementation agent — body and comments. The primary agent will not re-explain or rephrase it.** This means:
+- Acceptance criteria must specify the exact structural property to change, not just the desired behavior
+- If the fix requires aligning two code paths, the issue must name the specific files, functions, and lines to compare
+- "Make A consistent with B" is insufficient — state which structural property must match and how to verify it at diff level
+
 ### What NOT to Fix First
 [If there are tempting but wrong fixes — surface-level patches that would make
 the symptom disappear without addressing the root cause — name them explicitly

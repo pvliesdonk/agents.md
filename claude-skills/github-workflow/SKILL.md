@@ -3,6 +3,21 @@ name: github-workflow
 description: GitHub development workflow — issue discipline, commit format, pre-PR conformance gate, gh CLI recipes, and PR review handling
 ---
 
+## Before Implementing an Issue (Mandatory Read)
+
+Before writing any code, read the full issue — body **and** comments:
+
+```bash
+gh issue view <N>            # title + body + acceptance criteria
+gh issue view <N> --comments # full comment thread
+```
+
+Design decisions, option selections, and structural clarifications are often in the comments, not the body. An implementer who reads only the body may implement the wrong option.
+
+**If delegating to a subagent:** pass both outputs verbatim. Do not paraphrase, summarize, or "translate" the issue into your own prompt. The issue body IS the delegation prompt. If you feel you need to explain it, that means the issue is underspecified — file a comment on the issue to clarify, then delegate.
+
+**If the acceptance criteria are abstract** (e.g., "make function A consistent with function B" without specifying which structural property to match): do not implement. File a comment on the issue describing the specific structural change required — diff the two functions, identify the exact divergence, state which lines must match — then proceed.
+
 ## Before Creating a PR (Mandatory Gate)
 
 Run this checklist **before every `gh pr create`**, without exception.

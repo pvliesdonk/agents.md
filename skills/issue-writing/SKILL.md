@@ -328,10 +328,52 @@ pass. This makes it impossible to close the removal issue by adding a shim.
 
 ---
 
+## Structural Acceptance Criteria
+
+For issues that require two implementations to be structurally aligned (e.g., "make function A consistent with function B"), behavioral criteria are not sufficient. The issue must specify:
+
+1. **Which files and functions** to compare — exact paths and function names
+2. **Which structural property** must match — not "same behavior" but "same DAG construction approach", "same loop order", "same edge interleaving"
+3. **How to verify** — a diff command or explicit comparison the implementer must perform before declaring done
+
+**Why this matters:** The primary agent passes the issue verbatim to an implementation subagent. If the structural property is described vaguely, the subagent implements their interpretation of it. Their interpretation may pass all tests while missing the one structural difference that caused the bug.
+
+```markdown
+## Acceptance Criteria
+
+- [ ] `verify_hints_acyclic` builds the base DAG using a pre-built full graph
+  (all pairs) before iterating — identical to `_simulate_hints_sequential`
+  lines 42–67. Verify by reading both functions and confirming the DAG
+  construction block precedes the pair iteration loop in both.
+- [ ] Diff of `verify_hints_acyclic` vs `_simulate_hints_sequential` shows
+  no structural difference in DAG construction (only variable names may differ)
+```
+
+**Behavioral criteria alone (insufficient):**
+> "make `verify_hints_acyclic` consistent with `_simulate_hints_sequential`"
+
+**Structural criteria (sufficient):**
+> "`verify_hints_acyclic` must pre-build the full commit-ordering base DAG from all pairs before testing any hints — same as `_simulate_hints_sequential` lines 42–67. Verify: the pair loop in `verify_hints_acyclic` must receive a pre-built DAG, not build it incrementally per pair."
+
+### The Issue IS the Delegation Prompt
+
+The implementer will receive this issue verbatim — body and all comments — and implement it directly. The primary agent will not re-explain or rephrase it. Write acceptance criteria as if you are writing the implementation prompt, because you are. Every structural detail that matters must be in the issue body or a pinned comment, not in a verbal explanation added at delegation time.
+
+**When delegating, always include comments:**
+```bash
+gh issue view <N>         # body
+gh issue view <N> --comments   # full discussion thread
+```
+
+Design decisions made in the comment thread — including clarifications, option selections, and "use Option 1 not Option 2" choices — are part of the spec. An implementer who only reads the body misses half the issue.
+
+---
+
 ## Anti-Patterns
 
 - **"Add X and remove Y"** in one issue — removal gets deferred, guaranteed
 - **Vague acceptance criteria** — "improve performance" is not verifiable; "p95 latency < 200ms under load test" is
+- **Behavioral criteria for structural alignment** — "make A consistent with B" requires specifying which structural property must match and how to verify it
 - **Missing out-of-scope** — without it, scope creep is invisible until review
 - **No verification commands on removal issues** — the issue can be "closed" with the old code still present
 - **"Tests as needed"** — always specify; "as needed" means never
