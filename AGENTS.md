@@ -213,11 +213,11 @@ Use subagents for specialized tasks:
 | Agent | Use For | Access | Related Skills | Memory Usage |
 |-------|---------|--------|----------------|--------------|
 | `@architect` | Design decisions, refactoring strategy, dependency analysis | Read + ask-to-write | `python-patterns` | Store architectural decisions with rationale |
-| `@architect-reviewer` | Adversarial design conformance review — verifies implementation against design docs | Read-only (audit) | — | Record gaps found, fixture divergences |
-| `@investigator` | Deep failure analysis — traces symptom chains to root cause, delegates to specialists, produces report + issues. Never implements fixes. | Read-only (audit) | `issue-writing` | Record root cause patterns, failure signatures |
+| `@architect-reviewer` | Adversarial design conformance review — verifies implementation against design docs, runs pipeline in worktree to inspect real outputs | Isolated worktree | — | Record gaps found, fixture divergences |
+| `@investigator` | Deep failure analysis — traces symptom chains to root cause, delegates to specialists, produces report + issues. Runs in isolated worktree. Never implements permanent fixes. | Isolated worktree | `issue-writing` | Record root cause patterns, failure signatures |
 | `@llm-engineer` | LLM pipelines, LangChain, model config, structured output | Full write | `langchain-patterns`, `dual-model-strategy` | Track model performance, prompt effectiveness |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) | `prompt-craft`, `dual-model-strategy` | Save successful prompt templates |
-| `@security-reviewer` | Security audits, dependency checks, secrets review | Read-only (audit) | — | Record security patterns, vulnerabilities found |
+| `@security-reviewer` | Security audits, dependency checks, secrets review, reproduce vulnerabilities in worktree | Isolated worktree | — | Record security patterns, vulnerabilities found |
 | `@github-ops` | Issues, PRs, releases, CI/CD, stacked PR management | Full write + gh CLI | `github-workflow`, `issue-writing`, `stacked-prs`, `release-flow` | Remember PR patterns, team preferences |
 | `@frontend-dev` | CLI (typer/rich), web UI, user-facing interfaces | Full write | `cli-patterns` | Store UI/UX decisions, user feedback |
 | `@technical-writer` | ADRs, API docs, technical writing, changelogs | Read + ask-to-write | `documentation-patterns` | Store doc patterns, ADR history |

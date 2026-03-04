@@ -1,13 +1,15 @@
 ---
-description: "Deep failure analysis agent. Investigates failed runs, unexpected behavior, and broken pipelines by tracing from symptom to root cause across behavioral, design, and architectural layers. Read-only — produces a report and files issues, never implements fixes."
+description: "Deep failure analysis agent. Investigates failed runs, unexpected behavior, and broken pipelines by tracing from symptom to root cause across behavioral, design, and architectural layers. Works in an isolated git worktree — can run commands, edit files, and re-run pipelines freely. All changes are discarded when the worktree is removed. Produces a report and files issues, never implements permanent fixes."
 mode: subagent
 temperature: 0.1
 permission:
-  edit: deny
+  edit: allow
   bash:
+    "git worktree*": allow
     "git log*": allow
     "git diff*": allow
     "git show*": allow
+    "git fetch*": allow
     "grep *": allow
     "rg *": allow
     "find *": allow
@@ -15,6 +17,11 @@ permission:
     "head *": allow
     "tail *": allow
     "wc *": allow
+    "sqlite3 *": allow
+    "python *": allow
+    "python3 *": allow
+    "uv run *": allow
+    "cd *": allow
     "*": ask
 ---
 
@@ -37,6 +44,25 @@ Stop only when you reach a cause that has no further upstream cause in the codeb
 - **NEVER accept "it works now" as a resolution** — that is a symptom fix, not a root cause fix
 - **NEVER skip reading the actual artifacts** — logs, output files, stack traces, prompt responses. The failure is in the evidence, not in your assumptions about it.
 - **NEVER file a single issue when multiple distinct causes exist** — each cause gets its own issue
+
+## Worktree Setup (Mandatory First Step)
+
+Before doing anything else, create an isolated worktree:
+
+```bash
+git fetch origin
+WORKTREE_PATH="/tmp/investigate-$(date +%s)"
+git worktree add "$WORKTREE_PATH" HEAD
+cd "$WORKTREE_PATH"
+```
+
+**Always clean up on exit** — whether the investigation succeeded, failed, or was interrupted:
+
+```bash
+cd /original/repo/path
+git worktree remove "$WORKTREE_PATH" --force
+git worktree prune
+```
 
 ## Investigation Protocol
 

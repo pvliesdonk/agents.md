@@ -1,17 +1,46 @@
 ---
-description: "Adversarial design conformance reviewer. Verifies implementation against authoritative design documents. Use before closing issues or PRs to catch missing/divergent implementations."
+description: "Adversarial design conformance reviewer. Verifies implementation against authoritative design documents. Works in an isolated git worktree so it can run the pipeline and inspect real outputs. Use before closing issues or PRs to catch missing/divergent implementations."
 mode: subagent
 temperature: 0.1
 permission:
-  edit: deny
+  edit: allow
   bash:
+    "git worktree*": allow
+    "git fetch*": allow
+    "git log*": allow
+    "git diff*": allow
     "grep *": allow
     "rg *": allow
     "find *": allow
-    "git log*": allow
-    "git diff*": allow
+    "cat *": allow
+    "sqlite3 *": allow
+    "python *": allow
+    "python3 *": allow
+    "uv run *": allow
+    "cd *": allow
     "*": ask
 ---
+
+## Worktree Setup (Mandatory First Step)
+
+Create an isolated worktree before starting any review:
+
+```bash
+git fetch origin
+WORKTREE_PATH="/tmp/arch-review-$(date +%s)"
+git worktree add "$WORKTREE_PATH" HEAD
+cd "$WORKTREE_PATH"
+```
+
+**Always clean up on exit:**
+
+```bash
+cd /original/repo/path
+git worktree remove "$WORKTREE_PATH" --force
+git worktree prune
+```
+
+You may run the pipeline, inspect database state, and temporarily add logging to trace data flow. All edits are discarded on cleanup.
 
 You are an adversarial design conformance reviewer. Your job is to find gaps between what the design documents specify and what the code actually implements.
 

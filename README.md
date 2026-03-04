@@ -21,11 +21,11 @@ The foundation that applies to every session:
 | Agent | Role | Access |
 |-------|------|--------|
 | `@architect` | Design decisions, refactoring, dependency analysis | Read + ask-to-write |
-| `@architect-reviewer` | Adversarial design conformance review against design docs | Read-only (audit) |
-| `@investigator` | Deep failure analysis — symptom chains to root cause, specialist delegation, report + issues | Read-only (audit) |
+| `@architect-reviewer` | Adversarial design conformance review against design docs | Isolated worktree |
+| `@investigator` | Deep failure analysis — symptom chains to root cause, specialist delegation, report + issues | Isolated worktree |
 | `@llm-engineer` | LLM pipelines, LangChain, structured output, model routing | Full write |
 | `@prompt-engineer` | Prompt analysis, template design, output schemas | Read-only (advisory) |
-| `@security-reviewer` | Security audits, CVEs, secrets, LLM-specific risks | Read-only (audit) |
+| `@security-reviewer` | Security audits, CVEs, secrets, LLM-specific risks | Isolated worktree |
 | `@github-ops` | Issues, PRs, stacked PRs, releases, CI/CD | Full write + gh CLI |
 | `@frontend-dev` | CLI (typer/rich), web UI, terminal UX | Full write |
 | `@technical-writer` | ADRs, API docs, technical writing, changelogs | Read + ask-to-write |
