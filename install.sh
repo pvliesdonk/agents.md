@@ -63,8 +63,8 @@ if [[ -d "${SCRIPT_DIR}/.claude/hooks/examples" ]]; then
     echo "  hooks/examples/ ($(ls -1 "${SCRIPT_DIR}/.claude/hooks/examples" | wc -l | tr -d ' ') files)"
 fi
 
-# Install AGENTS.md (same for both)
-cp "${SCRIPT_DIR}/${CONFIG_FILE}" "${DEST}/${CONFIG_FILE}"
+# Install config file (source is always AGENTS.md in repo; dest name varies by target)
+cp "${SCRIPT_DIR}/AGENTS.md" "${DEST}/${CONFIG_FILE}"
 echo "  ${CONFIG_FILE}"
 
 # Install agents
