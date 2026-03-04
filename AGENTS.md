@@ -229,7 +229,9 @@ If you only checked that it runs, you have not verified anything. Run the archit
 
 ## Skills
 
-Load skills on-demand when you need reference patterns for a specific domain:
+Load skills on-demand when you need reference patterns for a specific domain.
+
+**Skills are NOT agents.** Do not use `@skill-name` — that searches for an agent file that does not exist. Skills are loaded as context, not invoked as subprocesses. Use `/skill-name` (slash command) in Claude Code, or the skill's name in an opencode command.
 
 | Skill | When to Load |
 |-------|-------------|
