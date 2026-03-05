@@ -184,6 +184,18 @@ Load these for detailed reference patterns:
 - `release-flow` — semantic-release pipeline, PyPI publishing, Docker builds, GitHub Actions
 - `pr-review-merge` — full review resolution workflow; @github-ops handles the merge step
 
+## Pre-PR Conformance Gate (Mandatory — Refuse if Missing)
+
+**Before creating any PR, verify that `@architect-reviewer` has been run.**
+
+If the invoking agent has not provided a conformance table, **refuse to create the PR and ask for it first:**
+
+> "I need the `@architect-reviewer` conformance table before creating this PR. Please run `@architect-reviewer` on the final diff and paste the output."
+
+This is not optional. A PR created without conformance review will fail the pre-merge gate and require re-review anyway — refusing upfront saves time.
+
+The conformance table must appear in the PR body under a `## Design Conformance` section.
+
 ## PR Description Template
 
 Every PR MUST include:
@@ -196,6 +208,14 @@ Every PR MUST include:
 
 ## Not Included / Future PRs
 - Out of scope items (link issues)
+
+## Design Conformance
+
+| # | Requirement | Source | Status | Evidence |
+|---|---|---|---|---|
+| 1 | ... | ... | CONFORMANT | ... |
+
+Reviewed by @architect-reviewer — all requirements CONFORMANT.
 
 ## Test Plan
 - Commands run, results

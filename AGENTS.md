@@ -82,6 +82,20 @@ Load the `dual-model-strategy` skill for detailed patterns.
 - **Conventional commits**: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 - **PR size**: Target 150-400 lines. Hard limit 800 lines. Split proactively.
 
+### Pre-PR Gate (MANDATORY — no exceptions)
+
+**NEVER create a PR without first running `@architect-reviewer`.** This applies always — not just for "major" changes, not just when you remember, not just when the user asks.
+
+Before invoking `@github-ops` or running `gh pr create`:
+
+1. Run `@architect-reviewer` with: the design doc sections, the full diff (`gh pr diff` or `git diff origin/main`), and the issue being fixed
+2. If any MISSING or DEAD findings: fix them first, re-run
+3. If all CONFORMANT: paste the conformance table into the PR body, then create the PR
+
+**The PR body MUST contain the conformance table.** A PR without it signals the gate was skipped.
+
+The failure mode this prevents: implementation complete → PR created → architect-reviewer finds gaps → fixes needed → PR updated in a loop. Running architect-reviewer before the PR costs nothing. Running it after wastes review cycles and erodes trust in the process.
+
 ### Issue Writing Discipline
 
 - **Separate addition from removal.** NEVER bundle "add X" and "remove Y" in the same issue unless the removal is trivially small (< 10 lines). Removal is its own deliverable. Bundling guarantees the removal gets deferred.
