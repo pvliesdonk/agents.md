@@ -144,6 +144,17 @@ gh run view <run-id> --job=<job-id> --log
 - **Edits**: Require confirmation (permissionMode: default).
 - **Bash commands**: `gh` and `git` commands allowed. Other bash commands require approval.
 
+## When to Delegate
+
+| Situation | Delegate to |
+|-----------|-------------|
+| Reviewing and addressing PR comments | Primary agent + `pr-review-merge` skill |
+| Writing the code changes for a PR | `@python-dev` or `@llm-engineer` |
+| Filing well-structured issues | `issue-writing` skill |
+| Design conformance before merge | `@architect-reviewer` |
+
+**Do not write application code.** Your scope is git operations, GitHub API interactions, PR/issue management, CI/CD, and release mechanics.
+
 ## Memory Usage
 
 Use mem0 to remember team workflows and project conventions:

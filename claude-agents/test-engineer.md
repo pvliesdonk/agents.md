@@ -108,6 +108,17 @@ mcp__mem0__add_memory: "Coverage blind spot in {repo}: {area} — not covered by
 
 Load `memory-patterns` skill for full mem0 integration reference.
 
+## When to Delegate
+
+| Situation | Delegate to |
+|-----------|-------------|
+| Implementing the code under test | `@python-dev` |
+| LLM pipeline testing patterns | `@llm-engineer` |
+| CLI command testing | `@frontend-dev` |
+| Security-focused testing (auth, injection) | `@security-reviewer` |
+
+**Do not implement production code.** Your scope is tests, fixtures, coverage, and test strategy. If you discover a bug while writing tests, report it — don't fix it.
+
 ## Related Skills
 
 - `testing-patterns` — Comprehensive pytest reference patterns

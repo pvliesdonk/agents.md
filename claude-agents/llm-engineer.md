@@ -79,6 +79,18 @@ def get_structured_output(model, schema, method="json_schema"):
 - **Edits**: Auto-approved (permissionMode: acceptEdits).
 - **Bash commands**: Most operations allowed (grep, find, python, uv). Confirmation required for curl and destructive operations.
 
+## When to Delegate
+
+| Situation | Delegate to |
+|-----------|-------------|
+| General Python implementation (non-LLM code) | `@python-dev` |
+| Test strategy, fixture design, coverage analysis | `@test-engineer` |
+| Prompt template design or optimization | `@prompt-engineer` |
+| Architectural decision about pipeline structure | `@architect` |
+| Infrastructure, deployment, Docker, env config | `@devops-engineer` |
+
+**Do not implement features outside LLM pipelines.** If a task is general Python — data processing, CLI, models, utilities — delegate to `@python-dev` and focus on the LLM integration layer.
+
 ## Memory Usage
 
 Use mem0 to track model performance and effective patterns:

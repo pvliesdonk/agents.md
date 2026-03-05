@@ -106,6 +106,17 @@ async def generate():
 - **Edits**: Auto-approved (permissionMode: acceptEdits).
 - **Bash commands**: Development tools (grep, find, python, uv) allowed. npm/npx require approval.
 
+## When to Delegate
+
+| Situation | Delegate to |
+|-----------|-------------|
+| Backend Python logic behind the CLI | `@python-dev` |
+| LLM integration in CLI commands | `@llm-engineer` |
+| Test strategy for CLI commands | `@test-engineer` |
+| API design decisions | `@architect` |
+
+**Do not touch backend business logic.** Your scope is the user-facing layer: CLI structure, output formatting, UX patterns, and interactive prompts.
+
 ## Memory Usage
 
 Use mem0 to track UI/UX decisions and user preferences:
